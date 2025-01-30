@@ -48,7 +48,7 @@ export const BookDetails = ({ book }) => {
   };
 
   return (
-    <div className="w-full px-5 sm:px-10 break-words sm:flex">
+    <div className="w-full px-5 sm:px-10 break-words sm:flex justify-between">
       <div>
         <h1 className="text-4xl mb-5 sm:font-semibold text-textPrimary font-medium">
           {isEditing ? (

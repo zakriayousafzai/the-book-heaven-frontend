@@ -4,7 +4,7 @@ import BookList from "./components/BookList";
 
 export default function Home() {
   return (
-    <div className="h-screen w-full bg-cover bg-center">
+    <div className="h-screen w-full bg-cover bg-center bg-BGImage">
         <BookList/>
     </div>
   );
