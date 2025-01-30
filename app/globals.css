@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #1F77FF; /* Bright blue for key elements like buttons and links */
+  --color-secondary: #4E5D78; /* Muted gray-blue for less prominent elements */
+  --color-background: #080C16; /* Dark background color */
+  --color-surface: #0E141F; /* Slightly lighter surface color for cards or sections */
+  --color-text-primary: #F5F7FA; /* Light text color for readability */
+  --color-text-secondary: #AAB4C5; /* Softer light gray for less important text */
+  --color-accent: #FFB703; /* Warm gold accent for highlights */
+  --color-border: #1C2838; /* Subtle border color for dividers or boundaries */
+}
+
+
+* {
+  margin: 0; 
+  padding: 0; 
+  box-sizing: border-box; 
+  font-family: Helvetica, Arial , sans-serif;
+  color: var(--color-text-primary) 
+}
+
+
+body {
+  @apply bg-BGImage h-screen w-full bg-cover bg-center bg-no-repeat bg-fixed;
+}

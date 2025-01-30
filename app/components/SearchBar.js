@@ -1,0 +1,202 @@
+'use client'
+import { useState, useMemo, useEffect, useRef, useContext } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import { BooksContext } from '@/app/ContextAPI/booksAPI';
+import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
+
+// Constants for search configuration
+const MAX_RESULTS = 5  // Maximum number of search results to display
+const MIN_SEARCH_LENGTH = 2  // Minimum characters required to trigger search
+
+const SearchBar = () => {
+  
+  const { booksData } = useContext(BooksContext);
+
+  const [inputValue, setInputValue] = useState('')  // Search input text
+  const [isOpen, setIsOpen] = useState(false)       // Dropdown visibility
+  const [selectedIndex, setSelectedIndex] = useState(-1)  // Keyboard navigation index
+
+  // Refs for DOM elements
+  const searchRef = useRef(null)  // Reference to search container for click outside detection
+  const inputRef = useRef(null)   // Reference to input element for focus management
+
+  // Memoize search results to prevent unnecessary recalculations
+  const matchingBooks = useMemo(() => {
+
+    // Only search if input meets minimum length requirement
+    if (inputValue.length < MIN_SEARCH_LENGTH) return []
+    
+    const searchTerm = inputValue.toLowerCase()
+    return booksData
+      .filter(book => (
+        // Search in title, author, and genre
+        book.title.toLowerCase().includes(searchTerm) ||
+        book.author?.toLowerCase().includes(searchTerm) ||
+        book.genre?.toLowerCase().includes(searchTerm)
+      ))
+      .slice(0, MAX_RESULTS)  // Limit number of results
+  }, [inputValue, booksData])
+
+  // Handle clicks outside of search component
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsOpen(false)  // Close dropdown when clicking outside
+      }
+    }
+
+    // Add and remove event listener
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setInputValue(e.target.value)
+    setIsOpen(true)  // Show dropdown when typing
+    setSelectedIndex(-1)  // Reset selection
+  }
+
+  // Clear search input and reset states
+  const handleClear = () => {
+    setInputValue('')
+    setIsOpen(false)
+    setSelectedIndex(-1)
+    inputRef.current?.focus()  // Return focus to input
+  }
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e) => {
+    if (!matchingBooks.length) return
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault()
+        // Move selection down, but not past last item
+        setSelectedIndex(prev => 
+          prev < matchingBooks.length - 1 ? prev + 1 : prev
+        )
+        break
+      case 'ArrowUp':
+        e.preventDefault()
+        // Move selection up, but not past first item
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
+        break
+      case 'Enter':
+        // Navigate to selected book
+        if (selectedIndex >= 0) {
+          window.location.href = `/bookDetails/${matchingBooks[selectedIndex].trackId}`
+        }
+        break
+      case 'Escape':
+        // Close dropdown
+        setIsOpen(false)
+        setSelectedIndex(-1)
+        break
+    }
+  }
+
+  return (
+    <div className=" flex items-center justify-center relative">
+
+      {/* Search container */}
+      <div ref={searchRef} className="relative flex flex-col items-center gap-1">
+        {/* Search input container */}
+        <div className="relative flex items-center w-52 sm:w-96">
+          {/* Search icon */}
+          <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-textSecondary" />
+          
+          {/* Search input */}
+          <input
+            ref={inputRef}
+            className="bg-surface text-textPrimary border-[1px] border-black h-10 rounded-md 
+                     pl-10 pr-10 opacity-80 w-full focus:outline-none focus:ring-2 
+                     focus:ring-accent focus:border-transparent"
+            type="text"
+            value={inputValue}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            placeholder="Search by Title, Author or Genre"
+            aria-label="Search books"
+            aria-controls="search-results"
+            aria-activedescendant={selectedIndex >= 0 ? `result-${selectedIndex}` : undefined}
+          />
+
+          {/* Clear button - only show when there's input */}
+          {inputValue && (
+            <button
+              onClick={handleClear}
+              className="absolute right-3 text-textSecondary hover:text-textPrimary"
+              aria-label="Clear search"
+            >
+              <XMarkIcon className="h-5 w-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Search results dropdown */}
+        {isOpen && (
+          <div
+            id="search-results"
+            role="listbox"
+            className="absolute top-full mt-1 w-52 sm:w-96 bg-background border-[1px] 
+                     border-border rounded-md shadow-lg z-10 max-h-[60vh] overflow-y-auto"
+          >
+            {matchingBooks.length > 0 ? (
+              // Map through matching books
+              matchingBooks.map((book, index) => (
+                <Link 
+                  key={book._id} 
+                  href={`/bookDetailsPage/${book._id}`}
+                  onClick={()=> setIsOpen(false)}
+                >
+                  <div
+                    role="option"
+                    id={`result-${index}`}
+                    aria-selected={selectedIndex === index}
+                    className={`flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer
+                              ${selectedIndex === index ? 'bg-secondary' : 'bg-surface'}`}
+                  >
+                    {/* book thumbnail */}
+                    <Image
+                      src={'/BG.png'}
+                      alt={book.title}
+                      width={40}
+                      height={40}
+                      className="rounded"
+                    />
+                    {/* book details */}
+                    <div className="flex flex-col">
+                      <span className="text-textPrimary font-medium">
+                        {book.title}
+                      </span>
+                      <span className="text-textSecondary text-sm">
+                        {book.genre}
+                      </span>
+                      <span className="text-textSecondary text-sm">
+                        {book.author}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))
+            ) : inputValue.length >= MIN_SEARCH_LENGTH ? (
+              // Show when no results found
+              <div className="p-3 text-textSecondary text-center">
+                No results found
+              </div>
+            ) : (
+              // Show when input is too short
+              <div className="p-3 text-textSecondary text-center">
+                Type at least {MIN_SEARCH_LENGTH} characters to search
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default SearchBar
