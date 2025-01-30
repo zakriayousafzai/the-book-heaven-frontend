@@ -4,6 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { BooksContext } from '@/app/ContextAPI/booksAPI';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import BookCard from './BookCard';
 
 // Constants for search configuration
 const MAX_RESULTS = 5  // Maximum number of search results to display
@@ -158,14 +159,7 @@ const SearchBar = () => {
                     className={`flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer
                               ${selectedIndex === index ? 'bg-secondary' : 'bg-surface'}`}
                   >
-                    {/* book thumbnail */}
-                    <Image
-                      src={'/BG.png'}
-                      alt={book.title}
-                      width={40}
-                      height={40}
-                      className="rounded"
-                    />
+
                     {/* book details */}
                     <div className="flex flex-col">
                       <span className="text-textPrimary font-medium">
