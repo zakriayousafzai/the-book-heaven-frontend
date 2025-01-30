@@ -5,11 +5,11 @@ import BookCard from './BookCard'
 const BookGrid = ({ bookData }) => {
 
     return (
-        <div className="relative bg-background w-full h-auto p-5 flex justify-center items-center">
+        <div className="relative bg-background w-full h-auto p-2 flex justify-center items-center">
 
             <div className="absolute top-0 w-full h-1 bg-border"></div>
 
-            <div className='mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-16 w-full'>
+            <div className='mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 w-full'>
 
                 {/* Map through the bookData array and render a bookCard for each book in Reverse */}
                 {bookData.slice().reverse().map((book) => {

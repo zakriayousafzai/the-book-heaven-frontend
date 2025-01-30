@@ -28,7 +28,7 @@ const BookList = () => {
       {!loading ? (
         <BookGrid bookData={booksData} />
       ) : (
-        <p className="text-center mt-5">Loading...</p>
+        <p className="text-center mt-10">Loading...</p>
       )}
     </div>
   );
