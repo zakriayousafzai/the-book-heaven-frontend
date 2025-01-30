@@ -1,36 +1,134 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app)
+# 📚 The Book Heaven - Full Stack Book Recommendation System
 
-## Getting Started
+Welcome to **The Book Heaven**, a full-stack book recommendation system built with **Next.js** (frontend) and **Express.js** (backend). Users can explore books, read details, add new recommendations, and leave reviews.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 📖 Browse and search for books by title, author, or genre.
+- 📝 View book details, including descriptions and related books.
+- ⭐ Add, edit, and delete book reviews with a star rating system.
+- ➕ Submit new book recommendations.
+- 🔍 Interactive search with auto-suggestions.
+- 🎨 Responsive and dark-themed UI with Tailwind CSS.
+
+## 📂 Project Structure
+
+### **Frontend (Next.js)**
+[Frontend Repository](https://github.com/zakriakhanx/the-book-heaven-frontend)
+
+```
+├── app/
+│   ├── ContextAPI/          # Books API Context for state management
+│   ├── bookDetailsPage/     # Dynamic book details page
+│   │   ├── [id]/            # Individual book page
+│   │   │   ├── page.js      # Main details page
+│   │   │   ├── components/  # Book details components
+│   ├── components/          # UI Components (Navbar, BookGrid, BookCard, etc.)
+│   ├── globals.css          # Global styles with Tailwind
+│   ├── layout.js            # Root layout with Navbar
+│   ├── page.js              # Homepage listing all books
+├── public/                  # Static assets
+├── package.json             # Dependencies and scripts
+├── tailwind.config.mjs      # Tailwind CSS configuration
+├── next.config.mjs          # Next.js configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### **Backend (Express.js)**
+[Backend Repository](https://github.com/zakriakhanx/the-book-heaven-backend)
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+```
+├── server.js                # Main server file
+├── routes/                  # Express API routes
+│   ├── books.js             # CRUD operations for books
+│   ├── reviews.js           # CRUD operations for reviews
+├── models/                  # Mongoose schemas
+│   ├── Book.js              # Book schema
+│   ├── Review.js            # Review schema
+├── config/                  # Database configuration
+├── middleware/              # Custom middlewares
+├── package.json             # Dependencies and scripts
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Technologies Used
 
-## Learn More
+### **Frontend**
+- **Next.js 15** - Server-side rendering & optimized routing.
+- **React 19** - Component-based UI design.
+- **Tailwind CSS** - Utility-first styling.
+- **Axios** - API requests for fetching book data.
+- **Context API** - State management for books and reviews.
 
-To learn more about Next.js, take a look at the following resources:
+### **Backend**
+- **Express.js** - Lightweight Node.js framework for REST APIs.
+- **MongoDB (Mongoose)** - NoSQL database for storing books and reviews.
+- **dotenv** - Environment variable management.
+- **CORS & Helmet** - Security enhancements.
+- **Multer** - File handling for future enhancements.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏗️ Installation & Setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Frontend**
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/zakriakhanx/the-book-heaven-frontend.git
+   cd the-book-heaven-frontend
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Set up environment variables:
+   - Create a `.env.local` file and add:
+     ```env
+     NEXT_PUBLIC_API_URL=http://localhost:3000
+     ```
+4. Run the development server:
+   ```sh
+   npm run dev
+   ```
+   Open `http://localhost:3000` to view the app.
 
-## Deploy on Vercel
+### **Backend**
+1. Clone the repository:
+   ```sh
+   git clone https://github.com/zakriakhanx/the-book-heaven-backend.git
+   cd the-book-heaven-backend
+   ```
+2. Install dependencies:
+   ```sh
+   npm install
+   ```
+3. Set up environment variables:
+   - Create a `.env` file and add:
+     ```env
+     MONGO_URI=your_mongodb_connection_string
+     PORT=5000
+     ```
+4. Run the backend server:
+   ```sh
+   npm start
+   ```
+   The API will be available at `http://localhost:5000/api`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🎯 Usage Guide
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Home Page:** Displays a list of book recommendations.
+- **Search Bar:** Type a book title, author, or genre to find books.
+- **Book Details:** Click on a book to view details and related books.
+- **Review System:** Add or delete reviews with star ratings.
+- **Add New Book:** Submit a book recommendation via the form.
+
+## 📌 TODOs & Future Enhancements
+
+- 📡 Connect to a real book API for broader recommendations.
+- 📊 Implement user authentication for personalized suggestions.
+- 🌎 Dark/light mode switcher.
+- 📚 Bookmark feature for saving favorite books.
+
+## 🤝 Contributing
+
+Want to contribute? Follow these steps:
+
+1. Fork the repo and create a new branch.
+2. Make changes and commit.
+3. Open a pull request.
