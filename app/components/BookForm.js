@@ -3,8 +3,11 @@ import React from 'react'
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
+import { AuthContext } from '../ContextAPI/AuthContextApi';
 
 const BookForm = () => {
+
+    const { token } = useContext(AuthContext);
     const { setBooksData } = useContext(BooksContext);
     const [showForm, setShowForm] = useState(false);
     const [newBook, setNewBook] = useState({
@@ -23,7 +26,12 @@ const BookForm = () => {
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, newBook);
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, newBook, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
+                    'Content-Type': 'application/json', // Or any content type your API expects
+                },
+            });
             setBooksData((prevBooks) => [...prevBooks, response.data]); // Update the books list
             setShowForm(false); // Hide the form after submission
             setNewBook({ title: '', author: '', genre: '', description: '' }); // Reset the form

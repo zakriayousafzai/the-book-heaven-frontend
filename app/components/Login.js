@@ -25,9 +25,12 @@ const Login = () => {
       });
 
       const data = await response.json();
-
+      
       if (response.ok) {
-        const { token, userId, role } = data;
+        
+        const token = data.token;
+        const role = data.role;
+        const userId = data.userId;
 
         login(token, role, userId);
 
