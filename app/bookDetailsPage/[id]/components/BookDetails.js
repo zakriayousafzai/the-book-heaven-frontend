@@ -4,9 +4,10 @@ import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { BooksContext } from '@/app/ContextAPI/booksAPI';
 import axios from 'axios';
 import Link from 'next/link';
-import BookCard from '@/app/components/BookCard';
+import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 
 export const BookDetails = ({ book }) => {
+  const { isAuthenticated } = useContext(AuthContext);
   const { booksData, setBooksData } = useContext(BooksContext);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedBook, setUpdatedBook] = useState({
@@ -48,70 +49,71 @@ export const BookDetails = ({ book }) => {
   };
 
   return (
-    <div className="w-full px-5 sm:px-10 break-words sm:flex justify-between">
-      <div>
-        <h1 className="text-4xl mb-5 sm:font-semibold text-textPrimary font-medium">
+    <div className='px-1 sm:px-10'>
+
+      <h1 className="text-4xl mb-5 sm:font-semibold text-textPrimary font-medium">
+        {isEditing ? (
+          <input
+            type="text"
+            name="title"
+            value={updatedBook.title}
+            onChange={handleInputChange}
+            className="text-4xl mb-5 font-normal text-textPrimary w-full border border-border p-2 rounded-md focus:outline-none focus:ring focus:ring-accent bg-surface"
+          />
+        ) : (
+          book.title
+        )}
+      </h1>
+
+
+      <div className="mt-6">
+        <h2 className="mb-2 text-textSecondary">
+          Author:{' '}
           {isEditing ? (
             <input
               type="text"
-              name="title"
-              value={updatedBook.title}
+              name="author"
+              value={updatedBook.author}
               onChange={handleInputChange}
-              className="text-4xl mb-5 font-normal text-textPrimary w-full border border-border p-2 rounded-md focus:outline-none focus:ring focus:ring-accent bg-surface"
+              className="p-2 rounded-md w-full border-b border-border focus:outline-none bg-surface"
             />
           ) : (
-            book.title
+            book.author
           )}
-        </h1>
-
-
-        <div className="mt-6">
-          <h2 className="mb-2 text-textSecondary">
-            Author:{' '}
-            {isEditing ? (
-              <input
-                type="text"
-                name="author"
-                value={updatedBook.author}
-                onChange={handleInputChange}
-                className="p-2 rounded-md w-full border-b border-border focus:outline-none bg-surface"
-              />
-            ) : (
-              book.author
-            )}
-          </h2>
-          <h2 className="mb-2 text-textSecondary">
-            Genre:{' '}
-            {isEditing ? (
-              <input
-                type="text"
-                name="genre"
-                value={updatedBook.genre}
-                onChange={handleInputChange}
-                className="p-2 rounded-md w-full border-b border-border bg-surface focus:outline-none"
-              />
-            ) : (
-              book.genre
-            )}
-          </h2>
-        </div>
-
-        <p className="text-textSecondary">
-          Description:
-          <br />
+        </h2>
+        <h2 className="mb-2 text-textSecondary">
+          Genre:{' '}
           {isEditing ? (
-            <textarea
-              name="description"
-              value={updatedBook.description}
+            <input
+              type="text"
+              name="genre"
+              value={updatedBook.genre}
               onChange={handleInputChange}
               className="p-2 rounded-md w-full border-b border-border bg-surface focus:outline-none"
             />
           ) : (
-            book.description
+            book.genre
           )}
-        </p>
+        </h2>
+      </div>
 
-        {/* Edit & Save Buttons */}
+      <p className="text-textSecondary">
+        Description:
+        <br />
+        {isEditing ? (
+          <textarea
+            name="description"
+            value={updatedBook.description}
+            onChange={handleInputChange}
+            className="p-2 rounded-md w-full border-b border-border bg-surface focus:outline-none"
+          />
+        ) : (
+          book.description
+        )}
+      </p>
+
+      {isAuthenticated && (
+        /* Edit & Save Buttons */
         <div className="flex gap-4 mt-4">
           {isEditing ? (
             <>
@@ -146,11 +148,10 @@ export const BookDetails = ({ book }) => {
               <TrashIcon className="w-6 h-6 hover:stroke-black" />
             </button>
           </Link>
+
         </div>
-      </div>
-      <div className='sm:block hidden'>
-        <BookCard id={updatedBook._id} title={updatedBook.title} genre={updatedBook.genre} />
-      </div>
+      )}
+
     </div>
   );
 };

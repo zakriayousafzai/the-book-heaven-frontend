@@ -2,14 +2,15 @@
 import { useContext, useMemo, useState, useEffect, use } from 'react'
 import { BooksContext } from '@/app/ContextAPI/booksAPI'
 import axios from "axios"
-
+import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
 import { BookDetails } from './components/BookDetails'
 import { RelatedBooks } from './components/RelatedBooks'
 import ReviewCard from './components/ReviewCard'
 import Navbar from '@/app/components/Navbar'
 
 const BookDetailsPage = ({ params }) => {
-    
+
+    const { isAuthenticated } = useContext(AuthContext);
     const param = use(params);
     const id = param.id;
 
@@ -27,17 +28,18 @@ const BookDetailsPage = ({ params }) => {
         }
 
         const fetchReviews = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`);
-            setReviews(response.data);
-            console.log(response.data)
-            
-          } catch (err) {
-            console.log(err.message);
-          } finally {
-            setLoading(false);
-          }}
-            fetchReviews();
+            try {
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`);
+                setReviews(response.data);
+                console.log(response.data)
+
+            } catch (err) {
+                console.log(err.message);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchReviews();
 
     }, [booksData, id]);
 
@@ -54,20 +56,20 @@ const BookDetailsPage = ({ params }) => {
     // Handle review submission
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
-    
+
         if (!reviewerName || !comment || rating < 1 || rating > 5) {
             alert('Please fill out all fields correctly.');
             return;
         }
-    
+
         const newReview = { reviewerName, rating, comment };
-    
+
         try {
             setLoading(true);
-    
+
             // Send the new review to the backend
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview);
-    
+
             setReviews((prevReviews) => [...prevReviews, response.data.newReview]);
 
             console.log('Review submitted successfully');
@@ -78,17 +80,17 @@ const BookDetailsPage = ({ params }) => {
             alert("Failed to submit review. Please try again.");
 
         } finally {
-            
+
             setLoading(false);
-    
+
             // Clear the form fields
             setReviewerName('');
             setRating(1);
             setComment('');
         }
     };
-    
-    
+
+
 
 
     if (!currentBook) {
@@ -101,7 +103,7 @@ const BookDetailsPage = ({ params }) => {
 
     return (
         <main className="flex flex-col min-h-screen">
-            
+
             <Navbar />
 
             {/* Book Details Section */}
@@ -117,10 +119,10 @@ const BookDetailsPage = ({ params }) => {
                 <div className="space-y-4 mb-6">
                     {reviews.length > 0 ? (
                         reviews.map((review) => (
-                            <ReviewCard 
-                            key={review._id} 
-                            review={review} 
-                            setReviews={setReviews} />
+                            <ReviewCard
+                                key={review._id}
+                                review={review}
+                                setReviews={setReviews} />
                         ))
                     ) : (
                         <p className="text-textSecondary">No reviews yet. Be the first to leave one!</p>
@@ -128,51 +130,53 @@ const BookDetailsPage = ({ params }) => {
                 </div>
 
                 {/* Review submission form */}
-                <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
-                    {/* Reviewer's Name */}
-                    <input
-                        type="text"
-                        placeholder="Your name"
-                        value={reviewerName}
-                        onChange={(e) => setReviewerName(e.target.value)}
-                        className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                        required
-                    />
+                {isAuthenticated && (
+                    <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+                        {/* Reviewer's Name */}
+                        <input
+                            type="text"
+                            placeholder="Your name"
+                            value={reviewerName}
+                            onChange={(e) => setReviewerName(e.target.value)}
+                            className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            required
+                        />
 
-                    {/* Rating */}
-                    <select
-                        value={rating}
-                        onChange={(e) => setRating(parseInt(e.target.value))}
-                        className="w-[70%] p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                        required
-                    >
-                        <option value="" disabled>
-                            Select a rating
-                        </option>
-                        {[1, 2, 3, 4, 5].map((num) => (
-                            <option key={num} value={num}>
-                                {num} {num === 1 ? 'Star' : 'Stars'}
+                        {/* Rating */}
+                        <select
+                            value={rating}
+                            onChange={(e) => setRating(parseInt(e.target.value))}
+                            className="w-[70%] p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            required
+                        >
+                            <option value="" disabled>
+                                Select a rating
                             </option>
-                        ))}
-                    </select>
+                            {[1, 2, 3, 4, 5].map((num) => (
+                                <option key={num} value={num}>
+                                    {num} {num === 1 ? 'Star' : 'Stars'}
+                                </option>
+                            ))}
+                        </select>
 
-                    {/* Comment */}
-                    <textarea
-                        placeholder="Write your review..."
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                        rows="4"
-                        required
-                    ></textarea>
+                        {/* Comment */}
+                        <textarea
+                            placeholder="Write your review..."
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            rows="4"
+                            required
+                        ></textarea>
 
-                    <button
-                        type="submit"
-                        className="self-start bg-primary text-white px-5 py-2 rounded-md hover:bg-accent hover:text-black"
-                    >
-                        Submit Review
-                    </button>
-                </form>
+                        <button
+                            type="submit"
+                            className="self-start bg-primary text-white px-5 py-2 rounded-md hover:bg-accent hover:text-black"
+                        >
+                            Submit Review
+                        </button>
+                    </form>
+                )}
             </section>
 
             <RelatedBooks books={relatedBooks} />

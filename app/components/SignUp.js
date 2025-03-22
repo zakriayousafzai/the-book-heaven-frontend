@@ -76,16 +76,17 @@ const SignUp = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
-        <div>
-            <a href="/login" className="text-textSecondary text-sm">Login</a>
-        </div>
-        <div className="flex items-center justify-center">
+
+        <div className="flex items-center justify-between">
           <button
-            className="bg-primary hover:bg-accent text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-primary hover:bg-accent hover:text-background text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
             type="submit"
           >
             Sign Up
           </button>
+          <a className="inline-block align-baseline font-bold text-sm text-primary hover:text-accent" href="/login">
+            Login to existing account
+          </a>
         </div>
       </form>
     </div>

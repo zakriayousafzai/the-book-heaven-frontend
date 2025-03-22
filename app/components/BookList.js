@@ -3,8 +3,10 @@ import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
 import BookGrid from './BookGrid';
 import BookForm from './BookForm';
+import { AuthContext } from '../ContextAPI/AuthContextApi';
 
 const BookList = () => {
+  const { isAuthenticated } = useContext(AuthContext);
   const { booksData, setBooksData } = useContext(BooksContext);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +23,9 @@ const BookList = () => {
       <h1 className="text-4xl text-center m-5">Discover Your Next Great Read at The Book Heaven!</h1>
       </span>
       
-      <BookForm/>
+      {isAuthenticated && (
+        <BookForm/>
+      )}
 
       <h1 className="text-xl text-textSecondary mt-10 mb-3">List of Recommended Books</h1>
 

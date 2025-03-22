@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import StarRating from './StarRating';
 import axios from 'axios';
+import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 
 const ReviewCard = ({ review, setReviews }) => {
+    const { isAuthenticated } = useContext(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedReviewerName, setUpdatedReviewerName] = useState(review.reviewerName);
     const [updatedComment, setUpdatedComment] = useState(review.comment);
@@ -58,25 +60,28 @@ const ReviewCard = ({ review, setReviews }) => {
                         <p className="mt-2 text-textSecondary w-[60vw] break-words">{review.comment}</p>
                     </div>
 
-                    <div className="flex flex-col gap-4">
-                        {/* Delete Icon */}
-                        <button
-                            className="p-2 rounded-full bg-background hover:bg-accent"
-                            aria-label="Delete"
-                            onClick={() => handleDeleteReview(review._id)}
-                        >
-                            <TrashIcon className="w-6 h-6 hover:stroke-black" />
-                        </button>
+                    {isAuthenticated && (
+                        <div className="flex flex-col gap-4">
+                            {/* Delete Icon */}
+                            <button
+                                className="p-2 rounded-full bg-background hover:bg-accent"
+                                aria-label="Delete"
+                                onClick={() => handleDeleteReview(review._id)}
+                            >
+                                <TrashIcon className="w-6 h-6 hover:stroke-black" />
+                            </button>
 
-                        {/* Edit Icon */}
-                        <button
-                            className="p-2 rounded-full bg-background hover:bg-accent"
-                            aria-label="Edit"
-                            onClick={() => setIsEditing(true)}
-                        >
-                            <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
-                        </button>
-                    </div>
+                            {/* Edit Icon */}
+                            <button
+                                className="p-2 rounded-full bg-background hover:bg-accent"
+                                aria-label="Edit"
+                                onClick={() => setIsEditing(true)}
+                            >
+                                <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
+                            </button>
+                        </div>
+                    )}
+
                 </>
             ) : (
                 <div className="w-full bg-surface">

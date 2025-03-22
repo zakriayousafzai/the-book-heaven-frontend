@@ -1,20 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
+import { AuthContext } from '../ContextAPI/AuthContextApi';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(''); // Clear any previous errors
 
     try {
-      const response = await fetch('/api/auth/Login', { // Replace with your actual API endpoint for sign-in
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-in`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,19 +27,19 @@ const Login = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Sign-in successful
-        console.log('Sign-in successful:', data);
-        // Redirect to a protected Login (e.g., dashboard)
-        router.push('/dashboard'); // Adjust the route as needed
+        const { token, userId, role } = data;
 
+        login(token, role, userId);
+
+        console.log('Login successful:', data);
+        window.location.href = "/"; // Redirect to dashboard
       } else {
-        // Sign-in failed
-        console.error('Sign-in failed:', data.error || 'Invalid credentials');
-        setError(data.error || 'Invalid credentials');
+        const errorData = await response.json();
+        setError(errorData.message || 'Invalid email or password.');
       }
-    } catch (err) {
-      console.error('Error during sign-in:', err);
-      setError('An error occurred during sign-in.');
+    } catch (error) {
+      setError('An error occurred. Please try again.');
+      console.error('Login error:', error);
     }
   };
 
@@ -81,12 +83,12 @@ const Login = () => {
         </div>
         <div className="flex items-center justify-between">
           <button
-            className="bg-primary hover:bg-accent text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-primary hover:bg-accent text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:text-background"
             type="submit"
           >
             Sign In
           </button>
-          <a className="inline-block align-baseline font-bold text-sm text-primary hover:text-accent" href="/auth/signUp">
+          <a className="inline-block align-baseline font-bold text-sm text-primary hover:text-accent" href="/signup">
             Create an Account
           </a>
         </div>
