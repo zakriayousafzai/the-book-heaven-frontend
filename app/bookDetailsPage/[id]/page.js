@@ -10,7 +10,7 @@ import Navbar from '@/app/components/Navbar'
 
 const BookDetailsPage = ({ params }) => {
 
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, userName, token } = useContext(AuthContext);
     const param = use(params);
     const id = param.id;
 
@@ -40,8 +40,9 @@ const BookDetailsPage = ({ params }) => {
             }
         }
         fetchReviews();
+        setReviewerName(userName);
 
-    }, [booksData, id]);
+    }, [booksData, id, userName]);
 
     // Find current book
     const currentBook = useMemo(() =>
@@ -57,7 +58,7 @@ const BookDetailsPage = ({ params }) => {
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
 
-        if (!reviewerName || !comment || rating < 1 || rating > 5) {
+        if (!comment || rating < 1 || rating > 5) {
             alert('Please fill out all fields correctly.');
             return;
         }
@@ -68,7 +69,12 @@ const BookDetailsPage = ({ params }) => {
             setLoading(true);
 
             // Send the new review to the backend
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview);
+            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
+                    'Content-Type': 'application/json', // Or any content type your API expects
+                },
+            });
 
             setReviews((prevReviews) => [...prevReviews, response.data.newReview]);
 
@@ -83,8 +89,6 @@ const BookDetailsPage = ({ params }) => {
 
             setLoading(false);
 
-            // Clear the form fields
-            setReviewerName('');
             setRating(1);
             setComment('');
         }
@@ -132,15 +136,6 @@ const BookDetailsPage = ({ params }) => {
                 {/* Review submission form */}
                 {isAuthenticated && (
                     <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
-                        {/* Reviewer's Name */}
-                        <input
-                            type="text"
-                            placeholder="Your name"
-                            value={reviewerName}
-                            onChange={(e) => setReviewerName(e.target.value)}
-                            className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                            required
-                        />
 
                         {/* Rating */}
                         <select

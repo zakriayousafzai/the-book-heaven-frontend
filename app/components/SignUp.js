@@ -37,8 +37,9 @@ const SignUp = () => {
           const token = data.token;
           const role = data.role;
           const userId = data.userId;
+          const userName = data.userName;
   
-          login(token, role, userId);
+          login(token, role, userId, userName);
   
           console.log('Login successful:', data);
           window.location.href = "/"; // Redirect to dashboard

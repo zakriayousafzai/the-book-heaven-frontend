@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 
 export const BookDetails = ({ book }) => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
   const { booksData, setBooksData } = useContext(BooksContext);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedBook, setUpdatedBook] = useState({
@@ -21,7 +21,12 @@ export const BookDetails = ({ book }) => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${book._id}`);
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${book._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Include token in Authorization header
+          'Content-Type': 'application/json', // Or any content type your API expects
+        },
+      });
       // Update the context after deleting the book
       setBooksData(booksData.filter((b) => b._id !== book._id));
       console.log('Book deleted successfully');
@@ -112,7 +117,7 @@ export const BookDetails = ({ book }) => {
         )}
       </p>
 
-      {isAuthenticated && (
+      {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
         /* Edit & Save Buttons */
         <div className="flex gap-4 mt-4">
           {isEditing ? (

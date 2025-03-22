@@ -5,15 +5,19 @@ import axios from 'axios';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 
 const ReviewCard = ({ review, setReviews }) => {
-    const { isAuthenticated } = useContext(AuthContext);
+    const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
-    const [updatedReviewerName, setUpdatedReviewerName] = useState(review.reviewerName);
     const [updatedComment, setUpdatedComment] = useState(review.comment);
     const [updatedRating, setUpdatedRating] = useState(review.rating);
 
     const handleDeleteReview = async (id) => {
         try {
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
+                    'Content-Type': 'application/json', // Or any content type your API expects
+                },
+            });
             setReviews((prevReviews) => prevReviews.filter((review) => review._id !== id));
             console.log('Review Deleted Successfully');
         } catch (err) {
@@ -24,13 +28,17 @@ const ReviewCard = ({ review, setReviews }) => {
     const handleUpdateReview = async () => {
         try {
             const updatedReview = {
-                reviewerName: updatedReviewerName,
                 comment: updatedComment,
                 rating: updatedRating,
             };
 
             // Send updated review to the backend
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}`, updatedReview);
+            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}`, updatedReview, {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
+                    'Content-Type': 'application/json', // Or any content type your API expects
+                },
+            });
 
             // Update the local state with the updated review
             setReviews((prevReviews) =>
@@ -60,7 +68,7 @@ const ReviewCard = ({ review, setReviews }) => {
                         <p className="mt-2 text-textSecondary w-[60vw] break-words">{review.comment}</p>
                     </div>
 
-                    {isAuthenticated && (
+                    {(isAuthenticated && review.userId === userId || userRole === 'admin') && (
                         <div className="flex flex-col gap-4">
                             {/* Delete Icon */}
                             <button
@@ -85,15 +93,7 @@ const ReviewCard = ({ review, setReviews }) => {
                 </>
             ) : (
                 <div className="w-full bg-surface">
-                    <div className="mb-2">
-                        <label className="block text-sm font-medium text-secondary">Name</label>
-                        <input
-                            type="text"
-                            value={updatedReviewerName}
-                            onChange={(e) => setUpdatedReviewerName(e.target.value)}
-                            className="mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-accent focus:border-border sm:text-sm bg-background"
-                        />
-                    </div>
+
                     <div className="mb-2">
                         <label className="block text-sm font-medium text-secondary">Comment</label>
                         <textarea
