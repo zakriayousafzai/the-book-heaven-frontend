@@ -3,9 +3,10 @@ import React, { useState } from 'react'
 import { HeartIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
 import SearchBar from './SearchBar'
-
+import { useRouter } from 'next/navigation'
 
 const Navbar = () => {
+    const router = useRouter();
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
 
@@ -30,7 +31,12 @@ const Navbar = () => {
                 <SearchBar />
 
                 <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
-                    <button>Login</button>
+                    <Link href={"/login"}>
+                        <button
+                            className='flex items-center gap-1 text-textPrimary font-semibold'>
+                            Login
+                        </button>
+                    </Link>
                 </div>
 
                 {/* Decorative border line at the bottom of the navbar */}
