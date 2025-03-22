@@ -1,23 +1,56 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../ContextAPI/AuthContextApi';
 
 const SignUp = () => {
+
+  const { login } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
 
       if (password !== confirmPassword) {
         alert("Passwords don't match!");
         return;
       }
 
-    // TODO: Implement your sign-up logic here (e.g., API call)
-    console.log('Signing up with:', { name, email, password });
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/sign-up`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name, email, password }),
+        });
+  
+        const data = await response.json();
+        
+        if (response.ok) {
+          
+          const token = data.token;
+          const role = data.role;
+          const userId = data.userId;
+  
+          login(token, role, userId);
+  
+          console.log('Login successful:', data);
+          window.location.href = "/"; // Redirect to dashboard
+        } else {
+          const errorData = await response.json();
+          setError(errorData.message || 'Invalid email or password.');
+        }
+      } catch (error) {
+        setError('An error occurred. Please try again.');
+        console.error('Login error:', error);
+      }
+    
   };
 
   return (
