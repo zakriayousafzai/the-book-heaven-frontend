@@ -5,6 +5,7 @@ import React, { createContext, useState, useEffect, useCallback, useMemo } from 
 // Create the Auth Context with default values
 export const AuthContext = createContext({
     userName: null,
+    email: null,
     token: null,
     userRole: null,
     userId: null,
@@ -19,6 +20,7 @@ export const AuthContext = createContext({
 // Create the Auth Provider Component
 export const AuthProvider = ({ children }) => {
     const [userName, setUserName] = useState(null);
+    const [email, setEmail] = useState(null);
     const [token, setTokenState] = useState(null);
     const [userRole, setUserRoleState] = useState(null);
     const [userId, setUserIdState] = useState(null);
@@ -27,14 +29,16 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(null);
 
     // Helper function to set auth state and store in localStorage
-    const setAuthState = useCallback((authToken, role, id, userName) => {
+    const setAuthState = useCallback((authToken, role, id, userName, email) => {
         try {
             setUserName(userName);
+            setEmail(email);
             setTokenState(authToken);
             setUserRoleState(role);
             setUserIdState(id);
             setIsAuthenticatedState(true);
             localStorage.setItem('userName', userName);
+            localStorage.setItem('email', email);
             localStorage.setItem('authToken', authToken);
             localStorage.setItem('userRole', role);
             localStorage.setItem('userId', id);
@@ -46,10 +50,10 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     // Login function to be exposed through the context
-    const login = useCallback(async (authToken, role, id, userName) => {
+    const login = useCallback(async (authToken, role, id, userName, email) => {
         try {
             setLoading(true);
-            await setAuthState(authToken, role, id, userName);
+            await setAuthState(authToken, role, id, userName, email);
         } catch (err) {
             setError('Login failed. Please try again.');
             console.error('Login error:', err);
@@ -63,11 +67,13 @@ export const AuthProvider = ({ children }) => {
         try {
             setLoading(true);
             setUserName(null);
+            setEmail(null);
             setTokenState(null);
             setUserRoleState(null);
             setUserIdState(null);
             setIsAuthenticatedState(false);
             localStorage.removeItem('userName');
+            localStorage.removeItem('email');
             localStorage.removeItem('authToken');
             localStorage.removeItem('userRole');
             localStorage.removeItem('userId');
@@ -84,11 +90,13 @@ export const AuthProvider = ({ children }) => {
     // Function to clear auth state and localStorage (useful for error handling/cleanup)
     const clearAuth = useCallback(() => {
         setUserName(null);
+        setEmail(null);
         setTokenState(null);
         setUserRoleState(null);
         setUserIdState(null);
         setIsAuthenticatedState(false);
         localStorage.removeItem('userName');
+        localStorage.removeItem('email');
         localStorage.removeItem('authToken');
         localStorage.removeItem('userRole');
         localStorage.removeItem('userId');
@@ -98,18 +106,20 @@ export const AuthProvider = ({ children }) => {
     // useEffect to check for token on initial load (when app starts or refreshes)
     useEffect(() => {
         const storedUserName = localStorage.getItem('userName');
+        const storedEmail = localStorage.getItem('email');
         const storedToken = localStorage.getItem('authToken');
         const storedRole = localStorage.getItem('userRole');
         const storedUserId = localStorage.getItem('userId');
 
-        if (storedToken && storedRole && storedUserId && storedUserName) {
-            setAuthState(storedToken, storedRole, storedUserId, storedUserName);
+        if (storedToken && storedRole && storedUserId && storedUserName && storedEmail) {
+            setAuthState(storedToken, storedRole, storedUserId, storedUserName, storedEmail);
         }
         setLoading(false); // Set loading to false after initial check
     }, [setAuthState]);
 
     const authContextValue = useMemo(() => ({
         userName,
+        email,
         token,
         userRole,
         userId,
@@ -119,7 +129,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         error,
         clearAuth,
-    }), [token, userRole, userId, isAuthenticated, login, logout, loading, error, clearAuth, userName]);
+    }), [token, userRole, userId, isAuthenticated, login, logout, loading, error, clearAuth, userName, email]);
 
     return (
         <AuthContext.Provider value={authContextValue}>

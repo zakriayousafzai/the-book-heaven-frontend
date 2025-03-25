@@ -11,12 +11,35 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [nameError, setNameError] = useState('');
+
+  const validateName = (name) => {
+    const nameRegex = /^[a-zA-Z]+$/;
+    return nameRegex.test(name);
+  };
+
+  const handleNameChange = (e) => {
+    const newName = e.target.value;
+    setName(newName);
+    
+    if (!validateName(newName)) {
+      setNameError('Username should only contain letters without spaces or special characters');
+    } else {
+      setNameError('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setNameError('');
 
-      if (password !== confirmPassword) {
+    if (!validateName(name)) {
+      setNameError('Username should only contain letters without spaces or special characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
         alert("Passwords don't match!");
         return;
       }
@@ -38,8 +61,9 @@ const SignUp = () => {
           const role = data.role;
           const userId = data.userId;
           const userName = data.userName;
+          const userEmail = data.email;
   
-          login(token, role, userId, userName);
+          login(token, role, userId, userName, userEmail);
   
           console.log('Login successful:', data);
           window.location.href = "/"; // Redirect to dashboard
@@ -60,7 +84,7 @@ const SignUp = () => {
         <h2 className="block text-textPrimary text-center text-xl font-bold mb-6">Sign Up</h2>
         <div className="mb-4">
           <label className="block text-textSecondary text-sm font-bold mb-2" htmlFor="name">
-            Name
+            Username
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-textPrimary leading-tight focus:outline-none focus:shadow-outline bg-background"
@@ -68,8 +92,11 @@ const SignUp = () => {
             type="text"
             placeholder="Name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleNameChange}
           />
+          {nameError && (
+            <p className="text-red-500 text-xs italic mt-1">{nameError}</p>
+          )}
         </div>
         <div className="mb-4">
           <label className="block text-textSecondary text-sm font-bold mb-2" htmlFor="email">

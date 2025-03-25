@@ -117,6 +117,14 @@ export const BookDetails = ({ book }) => {
         )}
       </p>
 
+      <h2 className="mb-2 text-textSecondary">
+        Recommended by {' '}
+        <a href={`/user/${book.userName}`}
+          className="text-textPrimary font-semibold hover:underline">
+          {book.userName}
+        </a>
+      </h2>
+
       {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
         /* Edit & Save Buttons */
         <div className="flex gap-4 mt-4">

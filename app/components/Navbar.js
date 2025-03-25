@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 import { AuthContext } from '../ContextAPI/AuthContextApi'
 
 const Navbar = () => {
-    const { isAuthenticated, logout } = useContext(AuthContext);
+    const { isAuthenticated } = useContext(AuthContext);
 
     return (
         <>
@@ -32,18 +32,12 @@ const Navbar = () => {
 
                 {isAuthenticated ? (
                     <div className='flex items-center gap-2'>
-                        {/* <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
-                            <Link href={"/user"}>
+                        <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
+                            <Link href={`/profile`}>
                                 <button className='flex items-center gap-1 text-textPrimary font-semibold'>
                                     Profile
                                 </button>
                             </Link>
-                        </div> */}
-                        <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
-                            <button className='flex items-center gap-1 text-textPrimary font-semibold'
-                                onClick={logout}>
-                                Logout
-                            </button>
                         </div>
                     </div>
                 ) : (

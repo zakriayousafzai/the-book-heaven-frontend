@@ -6,7 +6,7 @@ import Link from 'next/link'
 const BookCard = ({ id, title, genre }) => {
   return (
     <Link href={`/bookDetailsPage/${id}`}>
-      <div className="h-full relative transform transition-transform duration-300 hover:scale-105 hover:rotate-1 m-4">
+      <div className="h-auto relative transform transition-transform duration-300 hover:scale-105 hover:rotate-1 m-4">
         {/* Main Book Cover Container */}
         <div className="flex flex-col items-center p-4 rounded-md h-full w-full
           before:absolute before:inset-0 before:rounded-md before:bg-gradient-to-r before:from-[#2c1810] before:to-[#5c3828]
