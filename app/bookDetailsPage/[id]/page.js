@@ -133,6 +133,12 @@ const BookDetailsPage = ({ params }) => {
                     )}
                 </div>
 
+                {!isAuthenticated && (
+                    <div className="mb-4">
+                        <p className="text-textSecondary">Please log in to leave a review.</p>
+                    </div>
+                )}
+
                 {/* Review submission form */}
                 {isAuthenticated && (
                     <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">

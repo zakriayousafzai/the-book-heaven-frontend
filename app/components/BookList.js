@@ -20,11 +20,17 @@ const BookList = () => {
     <div className="flex flex-col p-5 items-center">
 
       <span className='md:w-[60vw] lg:w-[50vw] w-[80vw]'>
-      <h1 className="text-4xl text-center m-5">Discover Your Next Great Read at The Book Heaven!</h1>
+        <h1 className="text-4xl text-center m-5">Discover Your Next Great Read at The Book Heaven!</h1>
+        {!isAuthenticated && (
+          <div className="mb-4 text-center text-sm">
+            <p className="text-textSecondary">Please login to recommend a book.</p>
+            <p className="text-textSecondary">If you don&apos;t have an account, please register.</p>
+          </div>
+        )}
       </span>
-      
+
       {isAuthenticated && (
-        <BookForm/>
+        <BookForm />
       )}
 
       <h1 className="text-xl text-textSecondary mt-10 mb-3">List of Recommended Books</h1>
