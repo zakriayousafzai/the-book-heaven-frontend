@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import StarRating from './StarRating';
+import EditableStarRating from './EditableStarRating';
 import axios from 'axios';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 import BookLoading from '@/app/components/BookLoading';
@@ -103,6 +104,14 @@ const ReviewCard = ({ review, setReviews }) => {
                 <div className="w-full bg-surface">
 
                     <div className="mb-2">
+                        <label className="block text-sm font-medium text-secondary mb-2">Rating</label>
+                        <EditableStarRating
+                            rating={updatedRating}
+                            onRatingChange={setUpdatedRating}
+                        />
+                    </div>
+
+                    <div className="mb-2">
                         <label className="block text-sm font-medium text-secondary">Comment</label>
                         <textarea
                             value={updatedComment}
@@ -110,24 +119,7 @@ const ReviewCard = ({ review, setReviews }) => {
                             className="mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-accent focus:border-border sm:text-sm bg-background"
                         />
                     </div>
-                    <div className="mb-2">
-                        <label className="block text-sm font-medium text-secondary">Rating</label>
-                        <select
-                            value={updatedRating}
-                            onChange={(e) => setUpdatedRating(parseInt(e.target.value))}
-                            className="w-[70%] p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                            required
-                        >
-                            <option value="" disabled>
-                                Select a rating
-                            </option>
-                            {[1, 2, 3, 4, 5].map((num) => (
-                                <option key={num} value={num}>
-                                    {num} {num === 1 ? 'Star' : 'Stars'}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+
                     <div className="flex gap-4">
                         <button
                             className="p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"

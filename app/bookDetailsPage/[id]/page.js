@@ -3,6 +3,7 @@ import { useContext, useMemo, useState, useEffect, use } from 'react'
 import { BooksContext } from '@/app/ContextAPI/booksAPI'
 import axios from "axios"
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
+import EditableStarRating from './components/EditableStarRating'
 import { BookDetails } from './components/BookDetails'
 import { RelatedBooks } from './components/RelatedBooks'
 import ReviewCard from './components/ReviewCard'
@@ -138,23 +139,15 @@ const BookDetailsPage = ({ params }) => {
 
                 {/* Review submission form */}
                 {isAuthenticated && (
-                    <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
+                    <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 border border-border p-3 rounded-md bg-surface">
                         {/* Rating */}
-                        <select
-                            value={rating}
-                            onChange={(e) => setRating(parseInt(e.target.value))}
-                            className="w-[70%] p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                            required
-                        >
-                            <option value="" disabled>
-                                Select a rating
-                            </option>
-                            {[1, 2, 3, 4, 5].map((num) => (
-                                <option key={num} value={num}>
-                                    {num} {num === 1 ? 'Star' : 'Stars'}
-                                </option>
-                            ))}
-                        </select>
+                        <div className="">
+                            <label className="block text-sm font-medium text-secondary mb-2">Rating</label>
+                            <EditableStarRating
+                                rating={rating}
+                                onRatingChange={setRating}
+                            />
+                        </div>
 
                         {/* Comment */}
                         <textarea
