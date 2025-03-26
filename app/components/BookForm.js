@@ -5,70 +5,116 @@ import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
 import { AuthContext } from '../ContextAPI/AuthContextApi';
 import BookLoading from './BookLoading';
+import Modal from './Modal';
 
-const BookForm = ({setLoading}) => {
-
+const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
     const { token } = useContext(AuthContext);
     const { setBooksData } = useContext(BooksContext);
-    const [showForm, setShowForm] = useState(false);
-    const [newBook, setNewBook] = useState({
+    const [isOpen, setIsOpen] = useState(externalIsOpen || false);
+    const [bookData, setBookData] = useState({
         title: '',
         author: '',
         genre: '',
         description: '',
     });
 
+    useEffect(() => {
+        setIsOpen(externalIsOpen);
+    }, [externalIsOpen]);
+
+    useEffect(() => {
+        if (existingBook) {
+            setBookData({
+                title: existingBook.title,
+                author: existingBook.author,
+                genre: existingBook.genre,
+                description: existingBook.description,
+            });
+        }
+    }, [existingBook]);
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setNewBook({ ...newBook, [name]: value }); // No need for the 'rating' check anymore
+        setBookData({ ...bookData, [name]: value });
     };
 
+    const handleClose = () => {
+        setIsOpen(false);
+        if (onClose) onClose();
+    };
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true); // Set loading state
-        setShowForm(false); // Hide the form after submission
+        setLoading(true);
         try {
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, newBook, {
-                headers: {
-                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
-                    'Content-Type': 'application/json', // Or any content type your API expects
-                },
-            });
-
-            setLoading(false); // Reset loading state
-
-            setBooksData((prevBooks) => [...prevBooks, response.data]); // Update the books list
-            setShowForm(false); // Hide the form after submission
-            setNewBook({ title: '', author: '', genre: '', description: '' }); // Reset the form
-            console.log('Book added successfully');
+            if (existingBook) {
+                // Update existing book
+                const response = await axios.put(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/books/${existingBook._id}`,
+                    bookData,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                setBooksData(prev => prev.map(book => 
+                    book._id === existingBook._id ? response.data : book
+                ));
+            } else {
+                // Add new book
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/books`,
+                    bookData,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                setBooksData(prev => [...prev, response.data]);
+            }
+            
+            setBookData({ title: '', author: '', genre: '', description: '' });
+            handleClose();
+            console.log(`Book ${existingBook ? 'updated' : 'added'} successfully`);
         } catch (err) {
-            console.error('Error adding book:', err.message);
+            console.error(`Error ${existingBook ? 'updating' : 'adding'} book:`, err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className='flex justify-center flex-col items-center'>
-            <button
-                className="w-full sm:w-[50vw] p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
-                onClick={() => setShowForm(!showForm)}
-            >
-                {showForm ? 'Cancel' : 'Add New Book to Recommend'}
-            </button>
+        <>
+            {!existingBook && (
+                <div className='flex justify-center flex-col items-center'>
+                    <button
+                        className="w-full sm:w-[50vw] p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
+                        onClick={() => setIsOpen(true)}
+                    >
+                        Add New Book to Recommend
+                    </button>
+                </div>
+            )}
 
-            {showForm && (
+            <Modal isOpen={isOpen} onClose={handleClose}>
                 <form
                     onSubmit={handleFormSubmit}
-                    className="flex flex-col mt-5 p-5 bg-surface rounded-md shadow-md sm:w-[50vw]"
+                    className="flex flex-col p-6"
                 >
-                    <h2 className="text-xl font-semibold mb-4">Add a New Book</h2>
+                    <h2 className="text-xl font-semibold mb-4">
+                        {existingBook ? 'Edit Book' : 'Add a New Book'}
+                    </h2>
                     {/* Title */}
                     <label className="mb-2 font-medium">
                         Title
                         <input
                             type="text"
                             name="title"
-                            value={newBook.title}
+                            value={bookData.title}
                             onChange={handleInputChange}
                             className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
                             required
@@ -80,7 +126,7 @@ const BookForm = ({setLoading}) => {
                         <input
                             type="text"
                             name="author"
-                            value={newBook.author}
+                            value={bookData.author}
                             onChange={handleInputChange}
                             className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
                             required
@@ -92,7 +138,7 @@ const BookForm = ({setLoading}) => {
                         <input
                             type="text"
                             name="genre"
-                            value={newBook.genre}
+                            value={bookData.genre}
                             onChange={handleInputChange}
                             className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
                             required
@@ -103,28 +149,31 @@ const BookForm = ({setLoading}) => {
                         Description
                         <textarea
                             name="description"
-                            value={newBook.description}
+                            value={bookData.description}
                             onChange={handleInputChange}
                             className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
                             required
                         />
                     </label>
 
-                    <button
-                        type="submit"
-                        className="mt-4 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
-                    >
-                        Save Book
-                    </button>
-                    <button
-                        onClick={() => setShowForm(!showForm)}
-                        className="mt-4 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
-                    >
-                        Cancel
-                    </button>
+                    <div className="flex gap-2 mt-4">
+                        <button
+                            type="submit"
+                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
+                        >
+                            {existingBook ? 'Save Changes' : 'Save Book'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={handleClose}
+                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </form>
-            )}
-        </div>
+            </Modal>
+        </>
     )
 }
 
