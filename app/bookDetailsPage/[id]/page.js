@@ -7,9 +7,9 @@ import { BookDetails } from './components/BookDetails'
 import { RelatedBooks } from './components/RelatedBooks'
 import ReviewCard from './components/ReviewCard'
 import Navbar from '@/app/components/Navbar'
+import BookLoading from '@/app/components/BookLoading'
 
 const BookDetailsPage = ({ params }) => {
-
     const { isAuthenticated, userName, token } = useContext(AuthContext);
     const param = use(params);
     const id = param.id;
@@ -57,6 +57,7 @@ const BookDetailsPage = ({ params }) => {
     // Handle review submission
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         if (!comment || rating < 1 || rating > 5) {
             alert('Please fill out all fields correctly.');
@@ -66,48 +67,38 @@ const BookDetailsPage = ({ params }) => {
         const newReview = { reviewerName, rating, comment };
 
         try {
-            setLoading(true);
 
             // Send the new review to the backend
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview, {
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
-                    'Content-Type': 'application/json', // Or any content type your API expects
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
 
             setReviews((prevReviews) => [...prevReviews, response.data.newReview]);
-
             console.log('Review submitted successfully');
 
         } catch (err) {
-
             console.error("Error submitting review:", err.message);
             alert("Failed to submit review. Please try again.");
-
         } finally {
-
             setLoading(false);
-
             setRating(1);
             setComment('');
         }
     };
 
-
-
-
     if (!currentBook) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <p className="text-xl text-textSecondary">Book not found</p>
+                <BookLoading size="lg" />
             </div>
         );
     }
 
     return (
         <main className="flex flex-col min-h-screen">
-
             <Navbar />
 
             {/* Book Details Section */}
@@ -133,6 +124,12 @@ const BookDetailsPage = ({ params }) => {
                     )}
                 </div>
 
+                {loading && (
+                <div className='absolute text-center right-0 left-0'>
+                    <BookLoading size="lg" />
+                </div>
+            )}
+
                 {!isAuthenticated && (
                     <div className="mb-4">
                         <p className="text-textSecondary">Please log in to leave a review.</p>
@@ -142,7 +139,6 @@ const BookDetailsPage = ({ params }) => {
                 {/* Review submission form */}
                 {isAuthenticated && (
                     <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4">
-
                         {/* Rating */}
                         <select
                             value={rating}
@@ -172,9 +168,10 @@ const BookDetailsPage = ({ params }) => {
 
                         <button
                             type="submit"
-                            className="self-start bg-primary text-white px-5 py-2 rounded-md hover:bg-accent hover:text-black"
+                            disabled={loading}
+                            className={`self-start bg-primary text-white px-5 py-2 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent hover:text-black'}`}
                         >
-                            Submit Review
+                            {loading ? 'Submitting...' : 'Submit Review'}
                         </button>
                     </form>
                 )}

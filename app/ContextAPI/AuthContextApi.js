@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
+import BookLoading from '../components/BookLoading';
 
 // Create the Auth Context with default values
 export const AuthContext = createContext({
@@ -134,11 +135,8 @@ export const AuthProvider = ({ children }) => {
     return (
         <AuthContext.Provider value={authContextValue}>
             {loading ? (
-                <div className="flex items-center justify-center p-4">
-                    <div className="text-center">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
-                        <p className="text-gray-600">Verifying authentication...</p>
-                    </div>
+                <div className="flex justify-center items-center min-h-screen">
+                    <BookLoading size="lg" />
                 </div>
             ) : (
                 <>

@@ -4,6 +4,7 @@ import { BooksContext } from '../ContextAPI/booksAPI';
 import BookGrid from './BookGrid';
 import BookForm from './BookForm';
 import { AuthContext } from '../ContextAPI/AuthContextApi';
+import BookLoading from './BookLoading';
 
 const BookList = () => {
   const { isAuthenticated } = useContext(AuthContext);
@@ -18,7 +19,6 @@ const BookList = () => {
 
   return (
     <div className="flex flex-col p-5 items-center">
-
       <span className='md:w-[60vw] lg:w-[50vw] w-[80vw]'>
         <h1 className="text-4xl text-center m-5">Discover Your Next Great Read at The Book Heaven!</h1>
         {!isAuthenticated && (
@@ -30,7 +30,7 @@ const BookList = () => {
       </span>
 
       {isAuthenticated && (
-        <BookForm />
+        <BookForm setLoading={setLoading} />
       )}
 
       <h1 className="text-xl text-textSecondary mt-10 mb-3">List of Recommended Books</h1>
@@ -38,7 +38,9 @@ const BookList = () => {
       {!loading ? (
         <BookGrid bookData={booksData} />
       ) : (
-        <p className="text-center mt-10">Loading...</p>
+        <div className="mt-10">
+          <BookLoading size="md" />
+        </div>
       )}
     </div>
   );

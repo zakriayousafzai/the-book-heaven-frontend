@@ -4,8 +4,9 @@ import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
 import { AuthContext } from '../ContextAPI/AuthContextApi';
+import BookLoading from './BookLoading';
 
-const BookForm = () => {
+const BookForm = ({setLoading}) => {
 
     const { token } = useContext(AuthContext);
     const { setBooksData } = useContext(BooksContext);
@@ -25,6 +26,8 @@ const BookForm = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Set loading state
+        setShowForm(false); // Hide the form after submission
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books`, newBook, {
                 headers: {
@@ -32,6 +35,9 @@ const BookForm = () => {
                     'Content-Type': 'application/json', // Or any content type your API expects
                 },
             });
+
+            setLoading(false); // Reset loading state
+
             setBooksData((prevBooks) => [...prevBooks, response.data]); // Update the books list
             setShowForm(false); // Hide the form after submission
             setNewBook({ title: '', author: '', genre: '', description: '' }); // Reset the form

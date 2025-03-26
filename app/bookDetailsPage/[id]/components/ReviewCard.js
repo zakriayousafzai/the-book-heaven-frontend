@@ -3,14 +3,17 @@ import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import StarRating from './StarRating';
 import axios from 'axios';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
+import BookLoading from '@/app/components/BookLoading';
 
 const ReviewCard = ({ review, setReviews }) => {
     const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedComment, setUpdatedComment] = useState(review.comment);
     const [updatedRating, setUpdatedRating] = useState(review.rating);
+    const [loading, setLoading] = useState(false);
 
     const handleDeleteReview = async (id) => {
+        setLoading(true); // Set loading state
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`, {
                 headers: {
@@ -22,10 +25,13 @@ const ReviewCard = ({ review, setReviews }) => {
             console.log('Review Deleted Successfully');
         } catch (err) {
             console.error("Error deleting review:", err.message);
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
     const handleUpdateReview = async () => {
+        setLoading(true); // Set loading state
         try {
             const updatedReview = {
                 comment: updatedComment,
@@ -51,6 +57,8 @@ const ReviewCard = ({ review, setReviews }) => {
             console.log('Review Updated Successfully');
         } catch (err) {
             console.error("Error updating review:", err.message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -134,6 +142,12 @@ const ReviewCard = ({ review, setReviews }) => {
                             Cancel
                         </button>
                     </div>
+                </div>
+            )}
+
+            {loading && (
+                <div className='absolute text-center right-0 left-0'>
+                    <BookLoading size="lg" />
                 </div>
             )}
         </div>
