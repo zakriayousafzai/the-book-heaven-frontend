@@ -12,14 +12,23 @@ const ReviewCard = ({ review, setReviews }) => {
     const [updatedComment, setUpdatedComment] = useState(review.comment);
     const [updatedRating, setUpdatedRating] = useState(review.rating);
     const [loading, setLoading] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+    const handleDeleteConfirm = () => {
+        setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteCancel = () => {
+        setShowDeleteConfirm(false);
+    };
 
     const handleDeleteReview = async (id) => {
-        setLoading(true); // Set loading state
+        setLoading(true);
         try {
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
-                    'Content-Type': 'application/json', // Or any content type your API expects
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
             setReviews((prevReviews) => prevReviews.filter((review) => review._id !== id));
@@ -27,7 +36,8 @@ const ReviewCard = ({ review, setReviews }) => {
         } catch (err) {
             console.error("Error deleting review:", err.message);
         } finally {
-            setLoading(false); // Reset loading state
+            setLoading(false);
+            setShowDeleteConfirm(false);
         }
     };
 
@@ -83,7 +93,7 @@ const ReviewCard = ({ review, setReviews }) => {
                             <button
                                 className="p-2 rounded-full bg-background hover:bg-accent"
                                 aria-label="Delete"
-                                onClick={() => handleDeleteReview(review._id)}
+                                onClick={handleDeleteConfirm}
                             >
                                 <TrashIcon className="w-6 h-6 hover:stroke-black" />
                             </button>
@@ -140,6 +150,30 @@ const ReviewCard = ({ review, setReviews }) => {
             {loading && (
                 <div className='absolute text-center right-0 left-0'>
                     <BookLoading size="lg" />
+                </div>
+            )}
+
+            {/* Delete Confirmation Dialog */}
+            {showDeleteConfirm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-surface p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+                        <h3 className="text-lg font-semibold text-textPrimary mb-4">Delete Review</h3>
+                        <p className="text-textSecondary mb-6">Are you sure you want to delete this review?</p>
+                        <div className="flex justify-end gap-4">
+                            <button
+                                className="px-4 py-2 bg-secondary text-textPrimary rounded hover:bg-gray-600"
+                                onClick={handleDeleteCancel}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                                onClick={() => handleDeleteReview(review._id)}
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>

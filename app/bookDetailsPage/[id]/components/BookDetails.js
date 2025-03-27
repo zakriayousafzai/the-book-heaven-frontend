@@ -13,6 +13,15 @@ export const BookDetails = ({ book }) => {
   const { booksData, setBooksData } = useContext(BooksContext);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleDeleteConfirm = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
+  };
 
   if (!book) return null;
 
@@ -31,6 +40,7 @@ export const BookDetails = ({ book }) => {
       console.error('Error deleting book:', err);
     } finally {
       setLoading(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -74,14 +84,12 @@ export const BookDetails = ({ book }) => {
                 <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
               </button>
 
-              <Link href="/">
-                <button
-                  onClick={handleDelete}
-                  className="p-2 rounded-full bg-secondary hover:bg-accent"
-                >
-                  <TrashIcon className="w-6 h-6 hover:stroke-black" />
-                </button>
-              </Link>
+              <button
+                onClick={handleDeleteConfirm}
+                className="p-2 rounded-full bg-secondary hover:bg-accent"
+              >
+                <TrashIcon className="w-6 h-6 hover:stroke-black" />
+              </button>
             </div>
           )}
 
@@ -96,6 +104,32 @@ export const BookDetails = ({ book }) => {
 
       {loading && (
         <BookLoading />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-surface p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+            <h3 className="text-lg font-semibold text-textPrimary mb-4">Delete Book</h3>
+            <p className="text-textSecondary mb-6">Are you sure you want to delete this book? This action cannot be undone.</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="px-4 py-2 bg-secondary text-textPrimary rounded hover:bg-gray-600"
+                onClick={handleDeleteCancel}
+              >
+                Cancel
+              </button>
+              <Link href="/">
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                  onClick={handleDelete}
+                >
+                  Delete
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
