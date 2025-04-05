@@ -1,19 +1,76 @@
 'use client';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { HeartIcon } from "@heroicons/react/24/solid";
 import { BooksContext } from '@/app/ContextAPI/booksAPI';
 import axios from 'axios';
 import Link from 'next/link';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 import BookLoading from '@/app/components/BookLoading';
 import BookForm from '@/app/components/BookForm';
+import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext';
 
 export const BookDetails = ({ book }) => {
+
+  const { favoritesData } = useContext(FavoriteContext);
   const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
   const { booksData, setBooksData } = useContext(BooksContext);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [favorite, setFavorite] = useState();
+
+  useEffect(() => {
+    const isFavorite = favoritesData.some(fav => fav.bookId === book._id);
+    setFavorite(isFavorite);
+  }, [favoritesData, book._id]);
+
+  const addedToFavorites = async () => {
+    try {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/${userId}/favorite`, {
+        userId: userId,
+        bookId: book._id
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      setFavorite(response.data);
+    } catch (err) {
+      console.error('Error fetching favorite:', err);
+    }
+  }
+
+  const deleteFavorite = async () => {
+    try {
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/${userId}/favorite/${book._id}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log('Favorite deleted successfully');
+    } catch (err) {
+      console.error('Error deleting favorite:', err);
+    }
+  }
+
+  const handleToggleFavorite = async () => {
+    if (favorite) {
+      setFavorite(false);
+      setLoading(true);
+      deleteFavorite();
+      setLoading(false);
+      console.log('deleting favorite');
+    } else {
+      console.log('adding favorite');
+      setFavorite(true);
+      setLoading(true);
+      addedToFavorites();
+      setLoading(false);
+    }
+  }
 
   const handleDeleteConfirm = () => {
     setShowDeleteConfirm(true);
@@ -75,23 +132,32 @@ export const BookDetails = ({ book }) => {
             </a>
           </h2>
 
-          {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
-            <div className="flex gap-4 mt-4">
-              <button
-                onClick={() => setIsEditing(true)}
-                className="p-2 rounded-full bg-secondary hover:bg-accent"
-              >
-                <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
-              </button>
+          <div className="flex gap-4 mt-4">
+            <button
+              onClick={() => handleToggleFavorite()}
+              className={`${favorite ? 'bg-red-500' : 'bg-secondary'} p-2 rounded-full hover:bg-red-500`}
+            >
+              <HeartIcon className="w-6 h-6" />
+            </button>
 
-              <button
-                onClick={handleDeleteConfirm}
-                className="p-2 rounded-full bg-secondary hover:bg-accent"
-              >
-                <TrashIcon className="w-6 h-6 hover:stroke-black" />
-              </button>
-            </div>
-          )}
+            {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
+              <div className='flex gap-4'>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="p-2 rounded-full bg-secondary hover:bg-accent"
+                >
+                  <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
+                </button>
+
+                <button
+                  onClick={handleDeleteConfirm}
+                  className="p-2 rounded-full bg-secondary hover:bg-accent"
+                >
+                  <TrashIcon className="w-6 h-6 hover:stroke-black" />
+                </button>
+              </div>
+            )}
+          </div>
 
           <BookForm
             setLoading={setLoading}

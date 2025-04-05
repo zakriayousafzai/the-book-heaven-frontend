@@ -4,21 +4,30 @@ import { BooksContext } from '@/app/ContextAPI/booksAPI'
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
 import BookCard from '../components/BookCard'
 import BookGrid from '../components/BookGrid'
+import axios from 'axios'
+import { FavoriteContext } from '../ContextAPI/FavoriteContext'
 
 const ProfilePage = () => {
+    const { favoritesData } = useContext(FavoriteContext);
     const { userId, userName, email, logout } = useContext(AuthContext);
     const { booksData } = useContext(BooksContext);
-    const [activeTab, setActiveTab] = useState('recommended');
     const [recommendedBooks, setRecommendedBooks] = useState([]);
+    const [favoriteBooks, setFavoriteBooks] = useState([]);
 
-    const fetchRecommendedBooks = useCallback(() => {
+    const fetchFavoriteBooks = useCallback(async () => {
+        const filtered = booksData.filter(book => favoritesData.some(fav => fav.bookId === book._id));
+        setFavoriteBooks(filtered);
+    }, [booksData, favoritesData]);
+
+    const fetchRecommendedBooks = useCallback(async () => {
         const filtered = booksData.filter(book => book.userId == userId);
         setRecommendedBooks(filtered);
     }, [booksData, userId]);
 
     useEffect(() => {
         fetchRecommendedBooks();
-    }, [fetchRecommendedBooks])
+        fetchFavoriteBooks();
+    }, [fetchRecommendedBooks, fetchFavoriteBooks]);
 
     console.log('recommendedBooks', recommendedBooks, booksData, userId)
 
@@ -41,28 +50,27 @@ const ProfilePage = () => {
         </div>
     )
 
-    const renderFavorites = () => (
-        <div className="bg-surface rounded-lg border border-border p-6 mb-6">
-            <h2 className="text-xl font-bold mb-4 text-text-primary">Favorite Books</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {/* {DummyData.favoriteBooks.map(book => renderBookCard(book))} */}
-            </div>
-        </div>
-    )
-
     return (
         <div className="container mx-auto px-4 py-8">
             {renderUserDetails()}
 
             <div className="mb-6">
                 <div className="bg-surface rounded-lg border border-border p-6">
-                <h1 className="text-2xl mb-3">Books you Recommended!</h1>
-                    <BookGrid bookData={recommendedBooks}/>
+                    <h1 className="text-2xl mb-3">Your Favorites!</h1>
+                    <BookGrid bookData={favoriteBooks} />
 
                 </div>
             </div>
 
-            {renderFavorites()}
+            <div className="mb-6">
+                <div className="bg-surface rounded-lg border border-border p-6">
+                    <h1 className="text-2xl mb-3">Books you Recommended!</h1>
+                    <BookGrid bookData={recommendedBooks} />
+
+                </div>
+            </div>
+
+
         </div>
     )
 }
