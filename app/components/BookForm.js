@@ -159,7 +159,7 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
                     <div className="flex gap-2 mt-4">
                         <button
                             type="submit"
-                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
+                            className={`flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600`}
                         >
                             {existingBook ? 'Save Changes' : 'Save Book'}
                         </button>

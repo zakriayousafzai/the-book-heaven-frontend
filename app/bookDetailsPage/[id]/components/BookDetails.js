@@ -12,17 +12,17 @@ import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext';
 
 export const BookDetails = ({ book }) => {
 
-  const { favoritesData } = useContext(FavoriteContext);
+  const { favoritesData, setFavoritesData } = useContext(FavoriteContext);
   const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
   const { booksData, setBooksData } = useContext(BooksContext);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [favorite, setFavorite] = useState();
+  const [isFavorite, setIsFavorite] = useState();
 
   useEffect(() => {
     const isFavorite = favoritesData.some(fav => fav.bookId === book._id);
-    setFavorite(isFavorite);
+    setIsFavorite(isFavorite);
   }, [favoritesData, book._id]);
 
   const addedToFavorites = async () => {
@@ -36,9 +36,13 @@ export const BookDetails = ({ book }) => {
           'Content-Type': 'application/json',
         },
       });
-      setFavorite(response.data);
+      setIsFavorite(response.data);
+      setFavoritesData([...favoritesData, response.data]);
+      console.log('Favorite added successfully', response.data);
     } catch (err) {
       console.error('Error fetching favorite:', err);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -50,25 +54,26 @@ export const BookDetails = ({ book }) => {
           'Content-Type': 'application/json',
         },
       });
+      setFavoritesData(favoritesData.filter((fav) => fav.bookId !== book._id));
       console.log('Favorite deleted successfully');
     } catch (err) {
       console.error('Error deleting favorite:', err);
+    } finally {
+      setLoading(false);
     }
   }
 
   const handleToggleFavorite = async () => {
-    if (favorite) {
-      setFavorite(false);
+    if (isFavorite) {
+      setIsFavorite(false);
       setLoading(true);
       deleteFavorite();
-      setLoading(false);
       console.log('deleting favorite');
     } else {
       console.log('adding favorite');
-      setFavorite(true);
+      setIsFavorite(true);
       setLoading(true);
       addedToFavorites();
-      setLoading(false);
     }
   }
 
@@ -103,74 +108,69 @@ export const BookDetails = ({ book }) => {
 
   return (
     <div className='px-1 sm:px-10'>
-      {!loading && (
-        <>
-          <h1 className="text-4xl mb-5 sm:font-semibold text-textPrimary font-medium">
-            {book.title}
-          </h1>
 
-          <div className="mt-6">
-            <h2 className="mb-2 text-textSecondary">
-              Author: {book.author}
-            </h2>
-            <h2 className="mb-2 text-textSecondary">
-              Genre: {book.genre}
-            </h2>
-          </div>
+      <h1 className="text-4xl mb-5 sm:font-semibold text-textPrimary font-medium">
+        {book.title}
+      </h1>
 
-          <p className="text-textSecondary">
-            Description:
-            <br />
-            {book.description}
-          </p>
+      <div className="mt-6">
+        <h2 className="mb-2 text-textSecondary">
+          Author: {book.author}
+        </h2>
+        <h2 className="mb-2 text-textSecondary">
+          Genre: {book.genre}
+        </h2>
+      </div>
 
-          <h2 className="mb-2 text-textSecondary">
-            Recommended by {' '}
-            <a href={`/user/${book.userName}`}
-              className="text-textPrimary font-semibold hover:underline">
-              {book.userName}
-            </a>
-          </h2>
+      <p className="text-textSecondary">
+        Description:
+        <br />
+        {book.description}
+      </p>
 
-          <div className="flex gap-4 mt-4">
+      <h2 className="mb-2 text-textSecondary">
+        Recommended by {' '}
+        <a href={`/user/${book.userName}`}
+          className="text-textPrimary font-semibold hover:underline">
+          {book.userName}
+        </a>
+      </h2>
+
+      <div className="flex gap-4 mt-4">
+        
+        {isAuthenticated && (
+        <button
+          onClick={() => handleToggleFavorite()}
+          className={`${isFavorite ? 'bg-red-500' : 'bg-secondary'} p-2 rounded-full hover:bg-red-500 ${loading ? 'cursor-wait' : ''}`}
+        >
+          <HeartIcon className="w-6 h-6" />
+        </button>)}
+
+        {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
+          <div className='flex gap-4'>
             <button
-              onClick={() => handleToggleFavorite()}
-              className={`${favorite ? 'bg-red-500' : 'bg-secondary'} p-2 rounded-full hover:bg-red-500`}
+              onClick={() => setIsEditing(true)}
+              className="p-2 rounded-full bg-secondary hover:bg-accent"
             >
-              <HeartIcon className="w-6 h-6" />
+              <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
             </button>
 
-            {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
-              <div className='flex gap-4'>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="p-2 rounded-full bg-secondary hover:bg-accent"
-                >
-                  <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
-                </button>
-
-                <button
-                  onClick={handleDeleteConfirm}
-                  className="p-2 rounded-full bg-secondary hover:bg-accent"
-                >
-                  <TrashIcon className="w-6 h-6 hover:stroke-black" />
-                </button>
-              </div>
-            )}
+            <button
+              onClick={handleDeleteConfirm}
+              className="p-2 rounded-full bg-secondary hover:bg-accent"
+            >
+              <TrashIcon className="w-6 h-6 hover:stroke-black" />
+            </button>
           </div>
+        )}
+      </div>
 
-          <BookForm
-            setLoading={setLoading}
-            isOpen={isEditing}
-            onClose={() => setIsEditing(false)}
-            existingBook={book}
-          />
-        </>
-      )}
-
-      {loading && (
-        <BookLoading />
-      )}
+      <BookForm
+        setLoading={setLoading}
+        isOpen={isEditing}
+        onClose={() => setIsEditing(false)}
+        existingBook={book}
+      />
 
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (

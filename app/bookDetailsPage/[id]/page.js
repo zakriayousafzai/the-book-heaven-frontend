@@ -107,6 +107,7 @@ const BookDetailsPage = ({ params }) => {
                 <BookDetails book={currentBook} />
             </div>
 
+
             {/* Review Section */}
             <section className="px-5 py-10 sm:px-14">
                 <h2 className="text-2xl font-semibold mb-5">Reviews</h2>
