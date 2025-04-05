@@ -3,23 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --color-primary: #1F77FF; /* Bright blue for key elements like buttons and links */
-  --color-secondary: #4E5D78; /* Muted gray-blue for less prominent elements */
-  --color-background: #080C16; /* Dark background color */
-  --color-surface: #0E141F; /* Slightly lighter surface color for cards or sections */
-  --color-text-primary: #F5F7FA; /* Light text color for readability */
-  --color-text-secondary: #AAB4C5; /* Softer light gray for less important text */
-  --color-accent: #FFB703; /* Warm gold accent for highlights */
-  --color-border: #1C2838; /* Subtle border color for dividers or boundaries */
+  /* Theme Colors */
+  --color-primary: #1F77FF;
+  --color-secondary: #4E5D78;
+  --color-accent: #FFB703;
+  
+  /* Background Colors */
+  --color-background: #080C16;
+  --color-surface: #0E141F;
+  --color-border: #1C2838;
+  
+  /* Typography Colors */
+  --color-text-primary: #F5F7FA;
+  --color-text-secondary: #AAB4C5;
+  
+  /* Focus and Interactive States */
+  --color-focus-ring: rgba(31, 119, 255, 0.5);
+  --color-hover-overlay: rgba(255, 255, 255, 0.1);
 }
 
 
-* {
-  margin: 0; 
-  padding: 0; 
-  box-sizing: border-box; 
-  font-family: Helvetica, Arial , sans-serif;
-  color: var(--color-text-primary) 
+/* Reset */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Base Styles */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body,
+button,
+input,
+textarea {
+  color: var(--color-text-primary);
 }
 
 
