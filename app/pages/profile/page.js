@@ -2,10 +2,10 @@
 import React, { useState, useContext, useEffect, useCallback, use } from 'react'
 import { BooksContext } from '@/app/ContextAPI/booksAPI'
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
-import BookCard from '../components/BookCard'
-import BookGrid from '../components/BookGrid'
+import BookCard from '@/app/components/BookCard'
+import BookGrid from '@/app/components/BookGrid'
 import axios from 'axios'
-import { FavoriteContext } from '../ContextAPI/FavoriteContext'
+import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext'
 
 const ProfilePage = () => {
     const { favoritesData } = useContext(FavoriteContext);

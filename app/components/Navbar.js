@@ -33,7 +33,7 @@ const Navbar = () => {
                 {isAuthenticated ? (
                     <div className='flex items-center gap-2'>
                         <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
-                            <Link href={`/profile`}>
+                            <Link href={`/pages/profile`}>
                                 <button className='flex items-center gap-1 text-textPrimary font-semibold'>
                                     Profile
                                 </button>
@@ -42,7 +42,7 @@ const Navbar = () => {
                     </div>
                 ) : (
                     <div className='bg-surface rounded-full p-2 border-border text-xs cursor-pointer'>
-                        <Link href={"/login"}>
+                        <Link href={"/pages/login"}>
                             <button
                                 className='flex items-center gap-1 text-textPrimary font-semibold'>
                                 Login

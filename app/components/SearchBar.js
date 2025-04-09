@@ -149,7 +149,7 @@ const SearchBar = () => {
               matchingBooks.map((book, index) => (
                 <Link 
                   key={book._id} 
-                  href={`/bookDetailsPage/${book._id}`}
+                  href={`/pages/bookDetailsPage/${book._id}`}
                   onClick={()=> setIsOpen(false)}
                 >
                   <div
