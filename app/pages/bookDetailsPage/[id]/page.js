@@ -1,4 +1,5 @@
 'use client'
+
 import { useContext, useMemo, useState, useEffect, use } from 'react'
 import { BooksContext } from '@/app/ContextAPI/booksAPI'
 import axios from "axios"
@@ -10,38 +11,56 @@ import ReviewCard from './components/ReviewCard'
 import Navbar from '@/app/components/Navbar'
 import BookLoading from '@/app/components/BookLoading'
 
+/**
+ * BookDetailsPage Component
+ * Displays detailed information about a specific book, including reviews and related books
+ *
+ * @param {Object} props
+ * @param {Object} props.params - URL parameters
+ * @param {string} props.params.id - Book ID from URL
+ */
 const BookDetailsPage = ({ params }) => {
     const { isAuthenticated, userName, token } = useContext(AuthContext);
     const param = use(params);
     const id = param.id;
 
-    const { booksData } = useContext(BooksContext)
+    const { booksData } = useContext(BooksContext);
 
+    // State management
     const [loading, setLoading] = useState(true);
-    const [reviews, setReviews] = useState([]); // State for reviews
-    const [reviewerName, setReviewerName] = useState(''); // State for reviewer name
-    const [rating, setRating] = useState(1); // State for rating
-    const [comment, setComment] = useState(''); // State for comment
+    const [error, setError] = useState(null);
+    const [reviews, setReviews] = useState([]);
+
+    // Form state
+    const [reviewerName, setReviewerName] = useState('');
+    const [rating, setRating] = useState(1);
+    const [comment, setComment] = useState('');
 
     useEffect(() => {
         if (booksData) {
             setLoading(false);
         }
 
+        /**
+         * Fetches reviews for the current book
+         */
         const fetchReviews = async () => {
             try {
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`);
                 setReviews(response.data);
-                console.log(response.data)
-
+                setError(null);
             } catch (err) {
-                console.log(err.message);
+                setError('Failed to load reviews. Please try again later.');
+                console.error('Error fetching reviews:', err);
             } finally {
                 setLoading(false);
             }
         }
-        fetchReviews();
-        setReviewerName(userName);
+
+        if (id) {
+            fetchReviews();
+            setReviewerName(userName);
+        }
 
     }, [booksData, id, userName]);
 
@@ -61,7 +80,8 @@ const BookDetailsPage = ({ params }) => {
         setLoading(true);
 
         if (!comment || rating < 1 || rating > 5) {
-            alert('Please fill out all fields correctly.');
+            setError('Please fill out all fields correctly.');
+            setLoading(false);
             return;
         }
 
@@ -81,8 +101,8 @@ const BookDetailsPage = ({ params }) => {
             console.log('Review submitted successfully');
 
         } catch (err) {
-            console.error("Error submitting review:", err.message);
-            alert("Failed to submit review. Please try again.");
+            console.error("Error submitting review:", err);
+            setError("Failed to submit review. Please try again.");
         } finally {
             setLoading(false);
             setRating(1);
@@ -127,10 +147,10 @@ const BookDetailsPage = ({ params }) => {
                 </div>
 
                 {loading && (
-                <div className='absolute text-center right-0 left-0'>
-                    <BookLoading size="lg" />
-                </div>
-            )}
+                    <div className='absolute text-center right-0 left-0'>
+                        <BookLoading size="lg" />
+                    </div>
+                )}
 
                 {!isAuthenticated && (
                     <div className="mb-4">
@@ -138,32 +158,65 @@ const BookDetailsPage = ({ params }) => {
                     </div>
                 )}
 
-                {/* Review submission form */}
+                {/* Review submission form for authenticated users */}
                 {isAuthenticated && (
-                    <form onSubmit={handleReviewSubmit} className="flex flex-col gap-4 border border-border p-3 rounded-md bg-surface">
-                        {/* Rating */}
+                    <form
+                        onSubmit={handleReviewSubmit}
+                        className="flex flex-col gap-4 border border-border p-3 rounded-md bg-surface"
+                        aria-label="Review submission form"
+                    >
+                        {error && (
+                            <div
+                                className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+                                role="alert"
+                                aria-live="polite"
+                            >
+                                <span>{error}</span>
+                            </div>
+                        )}
+
+                        {/* Rating selection */}
                         <div className="">
-                            <label className="block text-sm font-medium text-secondary mb-2">Rating</label>
+                            <label
+                                htmlFor="rating"
+                                className="block text-sm font-medium text-secondary mb-2"
+                            >
+                                Rating (required)
+                            </label>
                             <EditableStarRating
                                 rating={rating}
                                 onRatingChange={setRating}
+                                id="rating"
+                                aria-label="Select rating from 1 to 5 stars"
                             />
                         </div>
 
-                        {/* Comment */}
-                        <textarea
-                            placeholder="Write your review..."
-                            value={comment}
-                            onChange={(e) => setComment(e.target.value)}
-                            className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
-                            rows="4"
-                            required
-                        ></textarea>
+                        {/* Review comment */}
+                        <div>
+                            <label
+                                htmlFor="comment"
+                                className="block text-sm font-medium text-secondary mb-2"
+                            >
+                                Your Review (required)
+                            </label>
+                            <textarea
+                                id="comment"
+                                placeholder="Write your review..."
+                                value={comment}
+                                onChange={(e) => setComment(e.target.value)}
+                                className="w-full p-3 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                                rows="4"
+                                required
+                                aria-label="Review comment"
+                                aria-required="true"
+                            />
+                        </div>
 
                         <button
                             type="submit"
                             disabled={loading}
                             className={`self-start bg-primary text-white px-5 py-2 rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-accent hover:text-black'}`}
+                            aria-busy={loading}
                         >
                             {loading ? 'Submitting...' : 'Submit Review'}
                         </button>

@@ -3,7 +3,24 @@
 import React, { createContext, useState, useEffect, useCallback, useMemo } from 'react';
 import BookLoading from '../components/BookLoading';
 
-// Create the Auth Context with default values
+/**
+ * Authentication Context
+ * Provides authentication state and methods throughout the application
+ *
+ * @typedef {Object} AuthContextType
+ * @property {string|null} userName - User's display name
+ * @property {string|null} email - User's email address
+ * @property {string|null} token - Authentication token
+ * @property {string|null} userRole - User's role (e.g., 'admin', 'user')
+ * @property {string|null} userId - User's unique identifier
+ * @property {boolean} isAuthenticated - Authentication status
+ * @property {boolean} loading - Loading state
+ * @property {string|null} error - Error message if any
+ * @property {Function} login - Login function
+ * @property {Function} logout - Logout function
+ * @property {Function} clearAuth - Clear authentication state
+ */
+
 export const AuthContext = createContext({
     userName: null,
     email: null,
@@ -141,9 +158,20 @@ export const AuthProvider = ({ children }) => {
             ) : (
                 <>
                     {error && (
-                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <div
+                            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+                            role="alert"
+                            aria-live="polite"
+                        >
                             <strong className="font-bold">Error: </strong>
                             <span className="block sm:inline">{error}</span>
+                            <button
+                                className="absolute top-0 right-0 mt-2 mr-2 text-red-700"
+                                onClick={() => setError(null)}
+                                aria-label="Dismiss error"
+                            >
+                                ×
+                            </button>
                         </div>
                     )}
                     {children}

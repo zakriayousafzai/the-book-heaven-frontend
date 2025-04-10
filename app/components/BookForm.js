@@ -1,22 +1,36 @@
 'use client';
+
 import React from 'react'
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
 import { AuthContext } from '../ContextAPI/AuthContextApi';
-import BookLoading from './BookLoading';
 import Modal from './Modal';
+
+/**
+ * BookForm Component
+ * Handles both creation and editing of book entries
+ *
+ * @param {Object} props
+ * @param {Function} props.setLoading - Function to control loading state
+ * @param {boolean} props.isOpen - Controls modal visibility
+ * @param {Function} props.onClose - Handler for modal close
+ * @param {Object} props.existingBook - Book data for editing (optional)
+ */
 
 const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
     const { token } = useContext(AuthContext);
     const { setBooksData } = useContext(BooksContext);
     const [isOpen, setIsOpen] = useState(externalIsOpen || false);
+    // Initialize form state with empty values or existing book data
     const [bookData, setBookData] = useState({
         title: '',
         author: '',
         genre: '',
         description: '',
     });
+
+    // Track modal visibility state
 
     useEffect(() => {
         setIsOpen(externalIsOpen);
@@ -32,56 +46,78 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
             });
         }
     }, [existingBook]);
-
+    /**
+     * Handle form input changes
+     * Updates the bookData state with the new value while preserving other fields
+     */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setBookData({ ...bookData, [name]: value });
+        setBookData(prevData => ({
+            ...prevData,
+            [name]: value
+        }));
     };
+
+    /**
+     * Handles modal closure and resets form if needed
+     */
 
     const handleClose = () => {
         setIsOpen(false);
         if (onClose) onClose();
     };
 
+    /**
+     * Handles form submission for both creating and updating books
+     * Performs API request and updates global books context
+     *
+     * @param {Event} e - Form submission event
+     */
     const handleFormSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+
+        const headers = {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        };
+
         try {
+            let response;
             if (existingBook) {
                 // Update existing book
-                const response = await axios.put(
+                response = await axios.put(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/books/${existingBook._id}`,
                     bookData,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
+                    { headers }
                 );
-                setBooksData(prev => prev.map(book => 
+
+                // Update books list while preserving order
+                setBooksData(prev => prev.map(book =>
                     book._id === existingBook._id ? response.data : book
                 ));
             } else {
-                // Add new book
-                const response = await axios.post(
+                // Create new book
+                response = await axios.post(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/books`,
                     bookData,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                        },
-                    }
+                    { headers }
                 );
+
+                // Add new book to list
                 setBooksData(prev => [...prev, response.data]);
             }
-            
+
+            // Reset form and close modal on success
             setBookData({ title: '', author: '', genre: '', description: '' });
             handleClose();
-            console.log(`Book ${existingBook ? 'updated' : 'added'} successfully`);
+
+            const action = existingBook ? 'updated' : 'added';
+            console.log(`Book ${action} successfully`);
         } catch (err) {
-            console.error(`Error ${existingBook ? 'updating' : 'adding'} book:`, err.message);
+            const action = existingBook ? 'updating' : 'adding';
+            console.error(`Error ${action} book:`, err.message);
+            // TODO: Add user-facing error handling
         } finally {
             setLoading(false);
         }

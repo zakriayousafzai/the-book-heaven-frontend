@@ -6,6 +6,14 @@ import axios from 'axios';
 import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 import BookLoading from '@/app/components/BookLoading';
 
+/**
+ * ReviewCard Component
+ * Displays a single review with edit and delete functionality
+ *
+ * @param {Object} props
+ * @param {Object} props.review - Review data
+ * @param {Function} props.setReviews - Function to update reviews list
+ */
 const ReviewCard = ({ review, setReviews }) => {
     const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
     const [isEditing, setIsEditing] = useState(false);
@@ -13,6 +21,7 @@ const ReviewCard = ({ review, setReviews }) => {
     const [updatedRating, setUpdatedRating] = useState(review.rating);
     const [loading, setLoading] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleDeleteConfirm = () => {
         setShowDeleteConfirm(true);
@@ -32,42 +41,56 @@ const ReviewCard = ({ review, setReviews }) => {
                 },
             });
             setReviews((prevReviews) => prevReviews.filter((review) => review._id !== id));
-            console.log('Review Deleted Successfully');
+            setError(null);
         } catch (err) {
-            console.error("Error deleting review:", err.message);
+            console.error("Error deleting review:", err);
+            setError("Failed to delete review. Please try again.");
         } finally {
             setLoading(false);
             setShowDeleteConfirm(false);
         }
     };
 
+    /**
+     * Handles review update submission
+     */
     const handleUpdateReview = async () => {
-        setLoading(true); // Set loading state
+        if (!updatedComment.trim()) {
+            setError("Review comment cannot be empty");
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
         try {
             const updatedReview = {
-                comment: updatedComment,
+                comment: updatedComment.trim(),
                 rating: updatedRating,
             };
 
-            // Send updated review to the backend
-            const response = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}`, updatedReview, {
-                headers: {
-                    'Authorization': `Bearer ${token}`, // Include token in Authorization header
-                    'Content-Type': 'application/json', // Or any content type your API expects
-                },
-            });
+            const response = await axios.put(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}`,
+                updatedReview,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            );
 
-            // Update the local state with the updated review
             setReviews((prevReviews) =>
                 prevReviews.map((r) =>
                     r._id === review._id ? response.data.updatedReview : r
                 )
             );
 
-            setIsEditing(false); // Close the editing form
-            console.log('Review Updated Successfully');
+            setIsEditing(false);
+            setError(null);
         } catch (err) {
-            console.error("Error updating review:", err.message);
+            console.error("Error updating review:", err);
+            setError("Failed to update review. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -111,35 +134,66 @@ const ReviewCard = ({ review, setReviews }) => {
 
                 </>
             ) : (
-                <div className="w-full bg-surface">
+                <div className="w-full bg-surface" role="form" aria-label="Edit review">
+                    {error && (
+                        <div
+                            className="mb-4 p-3 bg-red-100 text-red-700 rounded-md"
+                            role="alert"
+                            aria-live="polite"
+                        >
+                            {error}
+                        </div>
+                    )}
 
                     <div className="mb-2">
-                        <label className="block text-sm font-medium text-secondary mb-2">Rating</label>
+                        <label
+                            htmlFor={`rating-${review._id}`}
+                            className="block text-sm font-medium text-secondary mb-2"
+                        >
+                            Rating
+                        </label>
                         <EditableStarRating
+                            id={`rating-${review._id}`}
                             rating={updatedRating}
                             onRatingChange={setUpdatedRating}
                         />
                     </div>
 
                     <div className="mb-2">
-                        <label className="block text-sm font-medium text-secondary">Comment</label>
+                        <label
+                            htmlFor={`comment-${review._id}`}
+                            className="block text-sm font-medium text-secondary"
+                        >
+                            Comment
+                        </label>
                         <textarea
+                            id={`comment-${review._id}`}
                             value={updatedComment}
                             onChange={(e) => setUpdatedComment(e.target.value)}
                             className="mt-1 block w-full p-2 border rounded-md shadow-sm focus:ring-accent focus:border-border sm:text-sm bg-background"
+                            required
+                            aria-required="true"
+                            aria-label="Review comment"
                         />
                     </div>
 
                     <div className="flex gap-4">
                         <button
+                            type="submit"
                             className="p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
                             onClick={handleUpdateReview}
+                            disabled={loading}
+                            aria-busy={loading}
                         >
-                            Save
+                            {loading ? 'Saving...' : 'Save'}
                         </button>
                         <button
+                            type="button"
                             className="p-2 bg-secondary text-textPrimary rounded-md hover:bg-gray-600"
-                            onClick={() => setIsEditing(false)}
+                            onClick={() => {
+                                setIsEditing(false);
+                                setError(null);
+                            }}
                         >
                             Cancel
                         </button>

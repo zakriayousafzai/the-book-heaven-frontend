@@ -1,9 +1,7 @@
 'use client'
-import React, { useStaten, useContext } from 'react'
-import { HeartIcon } from '@heroicons/react/24/solid'
+import React, { useContext } from 'react'
 import Link from 'next/link'
 import SearchBar from './SearchBar'
-import { useRouter } from 'next/navigation'
 import { AuthContext } from '../ContextAPI/AuthContextApi'
 
 const Navbar = () => {

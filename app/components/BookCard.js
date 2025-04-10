@@ -1,5 +1,4 @@
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 
 // BookCard component displays individual book information with a vintage book cover aesthetic

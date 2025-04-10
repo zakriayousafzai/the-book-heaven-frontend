@@ -1,17 +1,25 @@
 'use client'
+
 import { useState, useMemo, useEffect, useRef, useContext } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { BooksContext } from '@/app/ContextAPI/booksAPI';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import BookCard from './BookCard';
 
-// Constants for search configuration
-const MAX_RESULTS = 5  // Maximum number of search results to display
-const MIN_SEARCH_LENGTH = 2  // Minimum characters required to trigger search
+/**
+ * Search configuration constants
+ */
+const SEARCH_CONFIG = {
+  MAX_RESULTS: 5,      // Maximum number of search results to display
+  MIN_LENGTH: 2,       // Minimum characters required to trigger search
+  DEBOUNCE_MS: 300    // Debounce delay for search updates
+};
 
+/**
+ * SearchBar Component
+ * Provides real-time search functionality with keyboard navigation and accessibility support
+ */
 const SearchBar = () => {
-  
+
   const { booksData } = useContext(BooksContext);
 
   const [inputValue, setInputValue] = useState('')  // Search input text
@@ -22,22 +30,26 @@ const SearchBar = () => {
   const searchRef = useRef(null)  // Reference to search container for click outside detection
   const inputRef = useRef(null)   // Reference to input element for focus management
 
-  // Memoize search results to prevent unnecessary recalculations
+  /**
+   * Memoized search results to prevent unnecessary recalculations
+   * Filters books based on search term and returns limited results
+   */
   const matchingBooks = useMemo(() => {
+    if (inputValue.length < SEARCH_CONFIG.MIN_LENGTH) return [];
 
-    // Only search if input meets minimum length requirement
-    if (inputValue.length < MIN_SEARCH_LENGTH) return []
-    
-    const searchTerm = inputValue.toLowerCase()
-    return booksData
-      .filter(book => (
-        // Search in title, author, and genre
-        book.title.toLowerCase().includes(searchTerm) ||
-        book.author?.toLowerCase().includes(searchTerm) ||
-        book.genre?.toLowerCase().includes(searchTerm)
-      ))
-      .slice(0, MAX_RESULTS)  // Limit number of results
-  }, [inputValue, booksData])
+    const searchTerm = inputValue.toLowerCase();
+    const matchingResults = booksData
+      .filter(book => {
+        // Search across multiple fields with null checks
+        const titleMatch = book.title?.toLowerCase().includes(searchTerm);
+        const authorMatch = book.author?.toLowerCase().includes(searchTerm);
+        const genreMatch = book.genre?.toLowerCase().includes(searchTerm);
+        return titleMatch || authorMatch || genreMatch;
+      })
+      .slice(0, SEARCH_CONFIG.MAX_RESULTS);
+
+    return matchingResults;
+  }, [inputValue, booksData]);
 
   // Handle clicks outside of search component
   useEffect(() => {
@@ -69,33 +81,35 @@ const SearchBar = () => {
 
   // Handle keyboard navigation
   const handleKeyDown = (e) => {
-    if (!matchingBooks.length) return
+    // Skip keyboard navigation if no results
+    if (!matchingBooks.length) return;
 
-    switch (e.key) {
-      case 'ArrowDown':
-        e.preventDefault()
-        // Move selection down, but not past last item
-        setSelectedIndex(prev => 
+    const keyboardActions = {
+      ArrowDown: () => {
+        e.preventDefault();
+        setSelectedIndex(prev =>
           prev < matchingBooks.length - 1 ? prev + 1 : prev
-        )
-        break
-      case 'ArrowUp':
-        e.preventDefault()
-        // Move selection up, but not past first item
-        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1)
-        break
-      case 'Enter':
-        // Navigate to selected book
+        );
+      },
+      ArrowUp: () => {
+        e.preventDefault();
+        setSelectedIndex(prev => prev > 0 ? prev - 1 : -1);
+      },
+      Enter: () => {
         if (selectedIndex >= 0) {
-          window.location.href = `/bookDetails/${matchingBooks[selectedIndex].trackId}`
+          const selectedBook = matchingBooks[selectedIndex];
+          window.location.href = `/pages/bookDetailsPage/${selectedBook._id}`;
         }
-        break
-      case 'Escape':
-        // Close dropdown
-        setIsOpen(false)
-        setSelectedIndex(-1)
-        break
-    }
+      },
+      Escape: () => {
+        setIsOpen(false);
+        setSelectedIndex(-1);
+      }
+    };
+
+    // Execute keyboard action if defined
+    const action = keyboardActions[e.key];
+    if (action) action();
   }
 
   return (
@@ -107,7 +121,7 @@ const SearchBar = () => {
         <div className="relative flex items-center w-52 sm:w-96">
           {/* Search icon */}
           <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-textSecondary" />
-          
+
           {/* Search input */}
           <input
             ref={inputRef}
@@ -147,10 +161,10 @@ const SearchBar = () => {
             {matchingBooks.length > 0 ? (
               // Map through matching books
               matchingBooks.map((book, index) => (
-                <Link 
-                  key={book._id} 
+                <Link
+                  key={book._id}
                   href={`/pages/bookDetailsPage/${book._id}`}
-                  onClick={()=> setIsOpen(false)}
+                  onClick={() => setIsOpen(false)}
                 >
                   <div
                     role="option"
@@ -175,15 +189,12 @@ const SearchBar = () => {
                   </div>
                 </Link>
               ))
-            ) : inputValue.length >= MIN_SEARCH_LENGTH ? (
-              // Show when no results found
-              <div className="p-3 text-textSecondary text-center">
-                No results found
-              </div>
             ) : (
-              // Show when input is too short
+              // Display appropriate message based on search state
               <div className="p-3 text-textSecondary text-center">
-                Type at least {MIN_SEARCH_LENGTH} characters to search
+                {inputValue.length >= SEARCH_CONFIG.MIN_LENGTH
+                  ? 'No results found'
+                  : `Type at least ${SEARCH_CONFIG.MIN_LENGTH} characters to search`}
               </div>
             )}
           </div>

@@ -4,6 +4,16 @@ import React, { useState, useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { AuthContext } from '../ContextAPI/AuthContextApi';
 
+/**
+ * Login Component
+ * Handles user authentication with email and password
+ *
+ * Features:
+ * - Email and password validation
+ * - Error handling and display
+ * - Authentication state management
+ * - Secure form submission
+ */
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,9 +35,9 @@ const Login = () => {
       });
 
       const data = await response.json();
-      
+
       if (response.ok) {
-        
+
         const token = data.token;
         const role = data.role;
         const userId = data.userId;
@@ -50,14 +60,26 @@ const Login = () => {
 
   return (
     <div className="flex justify-center items-center h-full">
-      <form onSubmit={handleSubmit} className="bg-surface shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm">
-        <h2 className="block text-textPrimary text-center text-xl font-bold mb-6">Sign In</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="bg-surface shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full max-w-sm"
+        aria-labelledby="login-heading"
+      >
+        <h2 id="login-heading" className="block text-textPrimary text-center text-xl font-bold mb-6">Sign In</h2>
+
+        {/* Error message display */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+            role="alert"
+            aria-live="polite"
+          >
             <strong className="font-bold">Error!</strong>
-            <span className="block sm:inline">{error}</span>
+            <span className="block sm:inline" aria-label={error}>{error}</span>
           </div>
         )}
+
+        {/* Email input field */}
         <div className="mb-4">
           <label className="block text-textSecondary text-sm font-bold mb-2" htmlFor="email">
             Email
@@ -86,14 +108,20 @@ const Login = () => {
             required
           />
         </div>
+        {/* Submit and signup link */}
         <div className="flex items-center justify-between">
           <button
             className="bg-primary hover:bg-accent text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline hover:text-background"
             type="submit"
+            aria-label="Sign in to your account"
           >
             Sign In
           </button>
-          <a className="inline-block align-baseline font-bold text-sm text-primary hover:text-accent" href="/signup">
+          <a
+            className="inline-block align-baseline font-bold text-sm text-primary hover:text-accent"
+            href="/pages/signup"
+            aria-label="Create a new account"
+          >
             Create an Account
           </a>
         </div>

@@ -1,20 +1,48 @@
 'use client';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 
+/**
+ * ErrorBoundary Component
+ * Catches JavaScript errors anywhere in the child component tree and displays a fallback UI
+ *
+ * Key features:
+ * - Prevents the entire app from crashing when errors occur
+ * - Provides a user-friendly error message
+ * - Includes a retry mechanism
+ * - Logs errors for debugging
+ */
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
   }
 
+  /**
+   * Update state when an error occurs
+   * This is called during the "render" phase, so side-effects are not allowed
+   */
   static getDerivedStateFromError(error) {
-    return { hasError: true, error };
+    return {
+      hasError: true,
+      error: error
+    };
   }
 
+  /**
+   * Called when an error occurs in the child component tree
+   * Use this method for error logging or reporting
+   *
+   * @param {Error} error - The error that was thrown
+   * @param {Object} errorInfo - Component stack trace information
+   */
   componentDidCatch(error, errorInfo) {
-    // You can log the error to an error reporting service here
-    console.error('Error caught by boundary:', error, errorInfo);
+    // Log error to an error reporting service
+    console.error('Error details:', {
+      error: error,
+      componentStack: errorInfo.componentStack
+    });
   }
 
   render() {
@@ -30,10 +58,12 @@ class ErrorBoundary extends React.Component {
             </p>
             <button
               onClick={() => {
+                // Reset error state and refresh the page
                 this.setState({ hasError: false, error: null });
                 window.location.reload();
               }}
               className="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition-colors"
+              aria-label="Retry loading the application"
             >
               Try again
             </button>

@@ -2,7 +2,16 @@
 
 import React from 'react';
 
+/**
+ * BookLoading Component
+ * Displays an animated loading indicator in the shape of a book
+ *
+ * @param {Object} props
+ * @param {('sm'|'md'|'lg')} props.size - Size variant of the loading indicator
+ * @param {boolean} props.isLoading - Controls visibility of the loading indicator
+ */
 const BookLoading = ({ size = 'md', isLoading = true }) => {
+  // Define width classes for different size variants
   const sizeClasses = {
     sm: 'w-16',
     md: 'w-20',
@@ -10,13 +19,18 @@ const BookLoading = ({ size = 'md', isLoading = true }) => {
   };
 
   return (
-    <div className={`flex flex-col items-center justify-center gap-4 ${isLoading ? 'block' : 'hidden'}`}>
-      {/* Book icon with loading animation */}
+    <div
+      className={`flex flex-col items-center justify-center gap-4 ${isLoading ? 'block' : 'hidden'}`}
+      role="alert"
+      aria-busy={isLoading}
+      aria-label="Loading content"
+    >
+      {/* Animated book loader with spine and cover */}
       <div className={`relative ${sizeClasses[size]} aspect-[3/4]`}>
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" aria-hidden="true">
           {/* Book spine shadow */}
           <div className="absolute inset-y-0 left-0 w-[15%] bg-blue-600 rounded-l" />
-          
+
           {/* Book cover */}
           <div className="absolute inset-0 bg-blue-500 rounded animate-pulse">
             {/* Decorative lines */}
@@ -34,10 +48,14 @@ const BookLoading = ({ size = 'md', isLoading = true }) => {
         </div>
       </div>
 
+      {/* Loading animation styles */}
       <style jsx>{`
+        /* Bouncing animation for loading dots */
         .loading-dots div {
-          animation: loadingDots 1.4s infinite;
+          animation: loadingDots 1.4s infinite cubic-bezier(0.45, 0, 0.55, 1);
         }
+        
+        /* Staggered animation delays for dots */
         .loading-dots div:nth-child(2) {
           animation-delay: 0.2s;
         }
@@ -45,9 +63,16 @@ const BookLoading = ({ size = 'md', isLoading = true }) => {
           animation-delay: 0.4s;
         }
 
+        /* Keyframes for dot animation */
         @keyframes loadingDots {
-          0%, 100% { opacity: 0.3; transform: translateY(0); }
-          50% { opacity: 1; transform: translateY(-4px); }
+          0%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+          }
+          50% {
+            opacity: 1;
+            transform: translateY(-4px);
+          }
         }
       `}</style>
     </div>
