@@ -18,12 +18,16 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#080C16",
+};
+
 export const metadata = {
   title: "The book Heaven",
   description: "A place to find your next read",
-  keywords: "books, reading, library, ebooks, literature",
-  viewport: "width=device-width, initial-scale=1",
-  themeColor: "#080C16",
+  keywords: "books, reading, library, ebooks, literature"
 };
 
 const AppProviders = ({ children }) => (
