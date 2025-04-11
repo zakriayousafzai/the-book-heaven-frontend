@@ -98,7 +98,7 @@ export const BookDetails = ({ book }) => {
       console.log('adding favorite');
       setIsFavorite(true);
       setLoading(true);
-      addedToFavorites();
+      addToFavorites();
     }
   }
 
@@ -184,7 +184,6 @@ export const BookDetails = ({ book }) => {
       onClick={handleToggleFavorite}
       className={`${isFavorite ? 'bg-red-500' : 'bg-secondary'} p-2 rounded-full hover:bg-red-500
         ${loading ? 'cursor-wait opacity-50' : ''}`}
-      disabled={loading}
       aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
       aria-pressed={isFavorite}
     >
