@@ -35,11 +35,6 @@ export const metadata = {
   keywords: "books, reading, library, ebooks, literature",
 };
 
-const AppProviders = ({ children }) => (
-  <ErrorBoundary>
-    {children}
-  </ErrorBoundary>
-);
 
 export default function RootLayout({ children }) {
   return (
@@ -48,7 +43,6 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
       >
         <ClerkProvider>
-          <AppProviders>
             <StoreInitializer />
             <header className="flex justify-end items-center p-4 gap-4 h-16">
               <Show when="signed-out">
@@ -64,7 +58,6 @@ export default function RootLayout({ children }) {
               </Show>
             </header>
             {children}
-          </AppProviders>
         </ClerkProvider>
       </body>
     </html>
