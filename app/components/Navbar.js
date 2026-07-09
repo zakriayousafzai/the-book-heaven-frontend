@@ -33,16 +33,20 @@ const Navbar = () => {
 
         <SearchBar />
 
-        <div>
+        <div className="flex gap-5">
           <Show when="signed-in">
             <UserButton />
             <Link href={`/pages/profile`}></Link>
           </Show>
 
           <Show when="signed-out">
-            <SignInButton />
+            <SignInButton>
+              <button className="text-white rounded-full font-medium text-sm sm:text-base p-1 cursor-pointer">
+                Sign In
+              </button>
+            </SignInButton>
             <SignUpButton>
-              <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+              <button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm sm:text-base p-1 px-2 cursor-pointer">
                 Sign Up
               </button>
             </SignUpButton>

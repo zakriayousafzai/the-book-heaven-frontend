@@ -12,7 +12,7 @@ import { useFavoriteStore } from '@/app/store/useFavoriteStore'
  * Displays user profile information, favorite books, and recommended books
  */
 const ProfilePage = () => {
-    const { userId, userName, email, signOut } = useAuth()
+    const { userId, signOut } = useAuth()
     const { booksData } = useBooksStore()
     const { favoritesData } = useFavoriteStore()
 
