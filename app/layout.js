@@ -1,9 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { BooksProvider } from "./ContextAPI/booksAPI";
-// import { AuthProvider } from "./ContextAPI/AuthContextApi";
-import { FavoriteProvider } from "./ContextAPI/FavoriteContext";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { StoreInitializer } from "./components/StoreInitializer";
 import {
   ClerkProvider,
   Show,
@@ -39,9 +37,7 @@ export const metadata = {
 
 const AppProviders = ({ children }) => (
   <ErrorBoundary>
-    <FavoriteProvider>
-      <BooksProvider>{children}</BooksProvider>
-    </FavoriteProvider>
+    {children}
   </ErrorBoundary>
 );
 
@@ -53,6 +49,7 @@ export default function RootLayout({ children }) {
       >
         <ClerkProvider>
           <AppProviders>
+            <StoreInitializer />
             <header className="flex justify-end items-center p-4 gap-4 h-16">
               <Show when="signed-out">
                 <SignInButton />

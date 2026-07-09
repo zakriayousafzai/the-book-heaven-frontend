@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useContext, useEffect, useCallback, use } from 'react'
-import { BooksContext } from '@/app/ContextAPI/booksAPI'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useBooksStore } from '@/app/store/useBooksStore';
 import BookGrid from '@/app/components/BookGrid'
 import BookLoading from '@/app/components/BookLoading'
 
@@ -15,7 +15,7 @@ import BookLoading from '@/app/components/BookLoading'
  */
 const PublicProfile = ({ params }) => {
     const param = use(params);
-    const { booksData } = useContext(BooksContext);
+    const { booksData } = useBooksStore();
     const [recommendedBooks, setRecommendedBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);

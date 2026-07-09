@@ -1,9 +1,11 @@
-import React, { useState, useContext } from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import StarRating from './StarRating';
 import EditableStarRating from './EditableStarRating';
 import axios from 'axios';
-import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
+import { useAuth } from '@clerk/nextjs';
 import BookLoading from '@/app/components/BookLoading';
 
 /**
@@ -15,7 +17,8 @@ import BookLoading from '@/app/components/BookLoading';
  * @param {Function} props.setReviews - Function to update reviews list
  */
 const ReviewCard = ({ review, setReviews }) => {
-    const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
+    const { isSignedIn, getToken, userId } = useAuth();
+    const isAuthenticated = isSignedIn;
     const [isEditing, setIsEditing] = useState(false);
     const [updatedComment, setUpdatedComment] = useState(review.comment);
     const [updatedRating, setUpdatedRating] = useState(review.rating);
@@ -34,6 +37,7 @@ const ReviewCard = ({ review, setReviews }) => {
     const handleDeleteReview = async (id) => {
         setLoading(true);
         try {
+            const token = await getToken();
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -69,6 +73,7 @@ const ReviewCard = ({ review, setReviews }) => {
                 rating: updatedRating,
             };
 
+            const token = await getToken();
             const response = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${review._id}`,
                 updatedReview,
@@ -110,7 +115,7 @@ const ReviewCard = ({ review, setReviews }) => {
                         <p className="mt-2 text-textSecondary w-[60vw] break-words">{review.comment}</p>
                     </div>
 
-                    {(isAuthenticated && review.userId === userId || userRole === 'admin') && (
+                    {(isAuthenticated && review.userId === userId) && (
                         <div className="flex flex-col gap-4">
                             {/* Delete Icon */}
                             <button

@@ -1,9 +1,9 @@
 'use client'
 
-import { useContext, useMemo, useState, useEffect, use } from 'react'
-import { BooksContext } from '@/app/ContextAPI/booksAPI'
+import { useMemo, useState, useEffect } from 'react'
+import { useBooksStore } from '@/app/store/useBooksStore';
 import axios from "axios"
-import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
+import { useAuth } from '@clerk/nextjs'
 import EditableStarRating from './components/EditableStarRating'
 import { BookDetails } from './components/BookDetails'
 import { RelatedBooks } from './components/RelatedBooks'
@@ -20,11 +20,11 @@ import BookLoading from '@/app/components/BookLoading'
  * @param {string} props.params.id - Book ID from URL
  */
 const BookDetailsPage = ({ params }) => {
-    const { isAuthenticated, userName, token } = useContext(AuthContext);
+    const { isSignedIn, userName, getToken } = useAuth();
+    const isAuthenticated = isSignedIn;
+    const { booksData } = useBooksStore();
     const param = use(params);
     const id = param.id;
-
-    const { booksData } = useContext(BooksContext);
 
     // State management
     const [loading, setLoading] = useState(true);
@@ -87,15 +87,16 @@ const BookDetailsPage = ({ params }) => {
 
         const newReview = { reviewerName, rating, comment };
 
-        try {
+try {
 
-            // Send the new review to the backend
-            const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+                // Send the new review to the backend
+                const token = await getToken()
+                const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`, newReview, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
 
             setReviews((prevReviews) => [...prevReviews, response.data.newReview]);
             console.log('Review submitted successfully');

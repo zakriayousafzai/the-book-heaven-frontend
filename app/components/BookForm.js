@@ -2,13 +2,14 @@
 
 import React from 'react'
 import axios from 'axios';
-import { useState, useEffect, useContext } from 'react';
-import { BooksContext } from '../ContextAPI/booksAPI';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@clerk/nextjs';
+import { useBooksStore } from '@/app/store/useBooksStore';
 import Modal from './Modal';
 
 const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
-    const { token } = useContext(AuthContext);
-    const { setBooksData } = useContext(BooksContext);
+    const { getToken } = useAuth();
+    const { setBooksData } = useBooksStore();
     const [isOpen, setIsOpen] = useState(externalIsOpen || false);
     // Initialize form state with empty values or existing book data
     const [bookData, setBookData] = useState({
@@ -65,6 +66,7 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
         e.preventDefault();
         setLoading(true);
 
+        const token = await getToken()
         const headers = {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',

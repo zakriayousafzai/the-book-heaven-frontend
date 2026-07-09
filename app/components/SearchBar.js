@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useMemo, useEffect, useRef, useContext } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { BooksContext } from '@/app/ContextAPI/booksAPI';
+import { useBooksStore } from '@/app/store/useBooksStore';
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/react/24/outline'
 
 /**
@@ -20,7 +20,7 @@ const SEARCH_CONFIG = {
  */
 const SearchBar = () => {
 
-  const { booksData } = useContext(BooksContext);
+  const { booksData } = useBooksStore();
 
   const [inputValue, setInputValue] = useState('')  // Search input text
   const [isOpen, setIsOpen] = useState(false)       // Dropdown visibility

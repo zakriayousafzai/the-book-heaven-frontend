@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useContext } from 'react';
-import { BooksContext } from '../ContextAPI/booksAPI';
+import { useState, useEffect } from 'react';
+import { useBooksStore } from '@/app/store/useBooksStore';
 import BookGrid from './BookGrid';
 import BookForm from './BookForm';
 import BookLoading from './BookLoading';
@@ -19,9 +19,9 @@ import { useAuth } from '@clerk/nextjs'
  * - Handles loading states with a loading indicator
  */
 const BookList = () => {
-  const { userId, sessionId, getToken, isLoaded, isSignedIn } = useAuth()
+  const { isSignedIn } = useAuth()
   const isAuthenticated = isSignedIn;
-  const { booksData, setBooksData } = useContext(BooksContext);
+  const { booksData } = useBooksStore();
   const [loading, setLoading] = useState(true);
 
   // Update loading state when book data is available

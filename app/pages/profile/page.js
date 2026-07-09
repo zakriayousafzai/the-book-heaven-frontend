@@ -1,21 +1,20 @@
 'use client'
 
-import React, { useState, useContext, useEffect, useCallback } from 'react'
-import { BooksContext } from '@/app/ContextAPI/booksAPI'
-import { AuthContext } from '@/app/ContextAPI/AuthContextApi'
+import React, { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '@clerk/nextjs'
 import BookGrid from '@/app/components/BookGrid'
-import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext'
 import BookLoading from '@/app/components/BookLoading'
+import { useBooksStore } from '@/app/store/useBooksStore'
+import { useFavoriteStore } from '@/app/store/useFavoriteStore'
 
 /**
  * ProfilePage Component
  * Displays user profile information, favorite books, and recommended books
  */
 const ProfilePage = () => {
-    // Context values
-    const { favoritesData } = useContext(FavoriteContext);
-    const { userId, userName, email, logout } = useContext(AuthContext);
-    const { booksData } = useContext(BooksContext);
+    const { userId, userName, email, signOut } = useAuth()
+    const { booksData } = useBooksStore()
+    const { favoritesData } = useFavoriteStore()
 
     // Component state
     const [recommendedBooks, setRecommendedBooks] = useState([]);
@@ -83,7 +82,7 @@ const ProfilePage = () => {
 
                 <button
                     className="bg-red-500 text-white px-4 rounded transition-colors hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
-                    onClick={logout}
+                    onClick={signOut}
                     aria-label="Logout from your account"
                 >
                     Logout

@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useContext, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
-import { BooksContext } from '@/app/ContextAPI/booksAPI';
+import { useAuth } from '@clerk/nextjs';
+import { useBooksStore } from '@/app/store/useBooksStore';
+import { useFavoriteStore } from '@/app/store/useFavoriteStore';
 import axios from 'axios';
 import Link from 'next/link';
-import { AuthContext } from '@/app/ContextAPI/AuthContextApi';
 import BookForm from '@/app/components/BookForm';
-import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext';
 
 /**
  * BookDetails Component
@@ -19,9 +19,10 @@ import { FavoriteContext } from '@/app/ContextAPI/FavoriteContext';
  */
 export const BookDetails = ({ book }) => {
 
-  const { favoritesData, setFavoritesData } = useContext(FavoriteContext);
-  const { isAuthenticated, token, userId, userRole } = useContext(AuthContext);
-  const { booksData, setBooksData } = useContext(BooksContext);
+  const { isSignedIn, getToken, userId } = useAuth();
+  const isAuthenticated = isSignedIn;
+  const { favoritesData, setFavoritesData } = useFavoriteStore();
+  const { booksData, setBooksData } = useBooksStore();
   // State management
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -39,8 +40,9 @@ export const BookDetails = ({ book }) => {
    */
   const addToFavorites = async () => {
     try {
+      const token = await getToken()
       const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/${userId}/favorite`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/favorite`,
         {
           userId: userId,
           bookId: book._id
@@ -68,8 +70,9 @@ export const BookDetails = ({ book }) => {
    */
   const deleteFavorite = async () => {
     try {
+      const token = await getToken()
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/${userId}/favorite/${book._id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/favorite/${book._id}`,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -118,6 +121,7 @@ export const BookDetails = ({ book }) => {
   const handleDelete = async () => {
     setLoading(true);
     try {
+      const token = await getToken()
       await axios.delete(
         `${process.env.NEXT_PUBLIC_API_URL}/api/books/${book._id}`,
         {
@@ -192,7 +196,7 @@ export const BookDetails = ({ book }) => {
   )}
 
 
-        {(isAuthenticated && book.userId === userId || userRole === 'admin') && (
+        {(isAuthenticated && book.userId === userId) && (
           <div className='flex gap-4'>
             <button
               onClick={() => setIsEditing(true)}
