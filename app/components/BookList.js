@@ -4,8 +4,8 @@ import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
 import BookGrid from './BookGrid';
 import BookForm from './BookForm';
-import { AuthContext } from '../ContextAPI/AuthContextApi';
 import BookLoading from './BookLoading';
+import { useAuth } from '@clerk/nextjs'
 
 /**
  * BookList Component
@@ -19,7 +19,8 @@ import BookLoading from './BookLoading';
  * - Handles loading states with a loading indicator
  */
 const BookList = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { userId, sessionId, getToken, isLoaded, isSignedIn } = useAuth()
+  const isAuthenticated = isSignedIn;
   const { booksData, setBooksData } = useContext(BooksContext);
   const [loading, setLoading] = useState(true);
 

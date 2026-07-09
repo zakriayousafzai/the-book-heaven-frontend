@@ -4,19 +4,7 @@ import React from 'react'
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import { BooksContext } from '../ContextAPI/booksAPI';
-import { AuthContext } from '../ContextAPI/AuthContextApi';
 import Modal from './Modal';
-
-/**
- * BookForm Component
- * Handles both creation and editing of book entries
- *
- * @param {Object} props
- * @param {Function} props.setLoading - Function to control loading state
- * @param {boolean} props.isOpen - Controls modal visibility
- * @param {Function} props.onClose - Handler for modal close
- * @param {Object} props.existingBook - Book data for editing (optional)
- */
 
 const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
     const { token } = useContext(AuthContext);
