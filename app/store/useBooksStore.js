@@ -8,7 +8,11 @@ export const useBooksStore = create((set) => ({
   loading: true,
   error: null,
 
-  setBooksData: (data) => set({ booksData: data, loading: false, error: null }),
+  setBooksData: (data) => set((state) => ({
+    booksData: typeof data === 'function' ? data(state.booksData) : data,
+    loading: false,
+    error: null,
+  })),
 
   setError: (error) => set({ error, loading: false }),
 
