@@ -6,8 +6,11 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useBooksStore } from '@/app/store/useBooksStore';
 import Modal from './Modal';
+import { useUser } from '@clerk/nextjs';
 
 const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
+    const { user } = useUser();
+    const userName = user?.username;
     const { getToken } = useAuth();
     const { setBooksData } = useBooksStore();
     const [isOpen, setIsOpen] = useState(externalIsOpen || false);
@@ -90,7 +93,7 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
                 // Create new book
                 response = await axios.post(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/books`,
-                    bookData,
+                    {...bookData, userName},
                     { headers }
                 );
 
