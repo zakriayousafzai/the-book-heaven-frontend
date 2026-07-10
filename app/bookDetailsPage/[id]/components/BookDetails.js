@@ -167,7 +167,7 @@ export const BookDetails = ({ book }) => {
 
       <h2 className="mb-2 text-textSecondary">
         Recommended by {' '}
-        <a href={`/pages/user/${book.userName}`}
+        <a href={`/user/${book.userName}`}
           className="text-textPrimary font-semibold hover:underline">
           {book.userName}
         </a>

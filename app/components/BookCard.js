@@ -4,7 +4,7 @@ import Link from 'next/link'
 // BookCard component displays individual book information with a vintage book cover aesthetic
 const BookCard = ({ id, title, genre }) => {
   return (
-    <Link href={`/pages/bookDetailsPage/${id}`}>
+    <Link href={`/bookDetailsPage/${id}`}>
       <div className="h-auto relative transform transition-transform duration-300 hover:scale-105 hover:rotate-1 m-4">
         {/* Main Book Cover Container */}
         <div className="flex flex-col items-center p-4 rounded-md h-full w-full

@@ -2,8 +2,11 @@
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 const Navbar = () => {
+  const {user} = useUser();
+  const userName = user?.username;
   return (
     <>
       <div className="flex justify-between items-center h-[10vh] bg-background sticky top-0 z-10 text-textPrimary p-3">
@@ -35,7 +38,7 @@ const Navbar = () => {
 
         <div className="flex gap-5">
           <Show when="signed-in">
-            <Link href={`/pages/profile`}>Dashboard</Link>
+            <Link href={`/dashboard/${userName}`}>Dashboard</Link>
             <UserButton />
           </Show>
 

@@ -98,7 +98,7 @@ const SearchBar = () => {
       Enter: () => {
         if (selectedIndex >= 0) {
           const selectedBook = matchingBooks[selectedIndex];
-          window.location.href = `/pages/bookDetailsPage/${selectedBook._id}`;
+          window.location.href = `/bookDetailsPage/${selectedBook._id}`;
         }
       },
       Escape: () => {
@@ -163,7 +163,7 @@ const SearchBar = () => {
               matchingBooks.map((book, index) => (
                 <Link
                   key={book._id}
-                  href={`/pages/bookDetailsPage/${book._id}`}
+                  href={`/bookDetailsPage/${book._id}`}
                   onClick={() => setIsOpen(false)}
                 >
                   <div
