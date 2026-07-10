@@ -4,9 +4,11 @@ import React, { useState, useEffect, useCallback, use } from 'react'
 import BookGrid from '@/app/components/BookGrid'
 import BookLoading from '@/app/components/BookLoading'
 import axios from 'axios';
+import { useUser } from '@clerk/nextjs';
 
-const PublicProfile = ({ params }) => {
-    const param = use(params);
+const PublicProfile = () => {
+    const { user } = useUser();
+    const username = user.username;
     const [recommendedBooks, setRecommendedBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,7 +20,7 @@ const PublicProfile = ({ params }) => {
         try {
             setLoading(true);
 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${param.username}`);
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}`);
             setRecommendedBooks(response.data.books);
 
             setError(null);
@@ -28,7 +30,7 @@ const PublicProfile = ({ params }) => {
         } finally {
             setLoading(false);
         }
-    }, [param.username]);
+    }, [username]);
 
     useEffect(() => {
         fetchRecommendedBooks();
@@ -46,7 +48,7 @@ const PublicProfile = ({ params }) => {
             <div className="flex justify-between gap-6">
                 <div>
                     <h1 className="text-2xl font-bold text-text-primary">
-                        {param.username}
+                        {username}
                     </h1>
                 </div>
             </div>
@@ -65,7 +67,7 @@ const PublicProfile = ({ params }) => {
         <div
             className="container mx-auto px-4 py-8"
             role="main"
-            aria-label={`${param.username}'s public profile`}
+            aria-label={`${username}'s public profile`}
         >
             {renderUserDetails()}
 
