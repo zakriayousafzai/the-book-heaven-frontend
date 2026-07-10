@@ -1,21 +1,12 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, use } from 'react'
-import { useBooksStore } from '@/app/store/useBooksStore';
 import BookGrid from '@/app/components/BookGrid'
 import BookLoading from '@/app/components/BookLoading'
+import axios from 'axios';
 
-/**
- * PublicProfile Component
- * Displays a public user profile with their recommended books
- *
- * @param {Object} props
- * @param {Object} props.params - URL parameters
- * @param {string} props.params.username - Username from URL
- */
 const PublicProfile = ({ params }) => {
     const param = use(params);
-    const { booksData } = useBooksStore();
     const [recommendedBooks, setRecommendedBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -23,11 +14,13 @@ const PublicProfile = ({ params }) => {
     /**
      * Fetches and filters books recommended by this user
      */
-    const fetchRecommendedBooks = useCallback(() => {
+    const fetchRecommendedBooks = useCallback(async () => {
         try {
             setLoading(true);
-            const filtered = booksData.filter(book => book.userName === param.username);
-            setRecommendedBooks(filtered);
+
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${param.username}`);
+            setRecommendedBooks(response.data.books);
+
             setError(null);
         } catch (err) {
             console.error('Error fetching recommended books:', err);
@@ -35,7 +28,7 @@ const PublicProfile = ({ params }) => {
         } finally {
             setLoading(false);
         }
-    }, [booksData, param.username]);
+    }, [param.username]);
 
     useEffect(() => {
         fetchRecommendedBooks();
@@ -53,7 +46,7 @@ const PublicProfile = ({ params }) => {
             <div className="flex justify-between gap-6">
                 <div>
                     <h1 className="text-2xl font-bold text-text-primary">
-                        {param.username}&apos;s Profile
+                        {param.username}
                     </h1>
                 </div>
             </div>
