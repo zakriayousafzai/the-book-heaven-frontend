@@ -1,13 +1,8 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import ErrorBoundary from "./components/ErrorBoundary";
 import { StoreInitializer } from "./components/StoreInitializer";
 import {
   ClerkProvider,
-  Show,
-  SignInButton,
-  SignUpButton,
-  UserButton,
 } from "@clerk/nextjs";
 
 // Font configuration
