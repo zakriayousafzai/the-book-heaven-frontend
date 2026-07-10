@@ -35,8 +35,8 @@ const Navbar = () => {
 
         <div className="flex gap-5">
           <Show when="signed-in">
+            <Link href={`/pages/profile`}>Dashboard</Link>
             <UserButton />
-            <Link href={`/pages/profile`}></Link>
           </Show>
 
           <Show when="signed-out">
