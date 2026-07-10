@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import BookGrid from "@/app/components/BookGrid"
+import BookGrid from "@/app/components/BookGrid";
 
 /**
  * RelatedBooks Component
@@ -16,17 +16,15 @@ export const RelatedBooks = ({ books }) => {
     return (
         <section
             className="w-full h-auto py-5 px-7 flex flex-col justify-center sm:px-14"
-            aria-labelledby="related-books-heading"
-        >
+            aria-labelledby="related-books-heading">
             <h2
                 id="related-books-heading"
-                className="text-2xl text-textSecondary mb-4"
-            >
+                className="text-2xl text-textSecondary mb-4">
                 Related Books ({books.length})
             </h2>
             <div className="relative">
                 <BookGrid bookData={books} />
             </div>
         </section>
-    )
-}
+    );
+};

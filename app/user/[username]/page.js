@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import React, { useState, useEffect, useCallback, use } from 'react'
-import BookGrid from '@/app/components/BookGrid'
-import BookLoading from '@/app/components/BookLoading'
-import axios from 'axios';
+import React, { useState, useEffect, useCallback, use } from "react";
+import BookGrid from "@/app/components/BookGrid";
+import BookLoading from "@/app/components/BookLoading";
+import axios from "axios";
 
 const PublicProfile = ({ params }) => {
     const param = use(params);
@@ -18,13 +18,15 @@ const PublicProfile = ({ params }) => {
         try {
             setLoading(true);
 
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${param.username}`);
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${param.username}`,
+            );
             setRecommendedBooks(response.data.books);
 
             setError(null);
         } catch (err) {
-            console.error('Error fetching recommended books:', err);
-            setError('Failed to load recommended books');
+            console.error("Error fetching recommended books:", err);
+            setError("Failed to load recommended books");
         } finally {
             setLoading(false);
         }
@@ -41,8 +43,7 @@ const PublicProfile = ({ params }) => {
         <div
             className="bg-surface rounded-lg border border-border p-6 mb-6"
             role="region"
-            aria-label="User profile information"
-        >
+            aria-label="User profile information">
             <div className="flex justify-between gap-6">
                 <div>
                     <h1 className="text-2xl font-bold text-text-primary">
@@ -65,16 +66,14 @@ const PublicProfile = ({ params }) => {
         <div
             className="container mx-auto px-4 py-8"
             role="main"
-            aria-label={`${param.username}'s public profile`}
-        >
+            aria-label={`${param.username}'s public profile`}>
             {renderUserDetails()}
 
             {error && (
                 <div
                     className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
                     role="alert"
-                    aria-live="polite"
-                >
+                    aria-live="polite">
                     {error}
                 </div>
             )}
@@ -83,8 +82,7 @@ const PublicProfile = ({ params }) => {
                 <div
                     className="bg-surface rounded-lg border border-border p-6"
                     role="region"
-                    aria-label="Recommended books"
-                >
+                    aria-label="Recommended books">
                     <h2 className="text-2xl mb-3">
                         Recommended Books ({recommendedBooks.length})
                     </h2>
@@ -99,6 +97,6 @@ const PublicProfile = ({ params }) => {
             </div>
         </div>
     );
-}
+};
 
-export default PublicProfile
+export default PublicProfile;

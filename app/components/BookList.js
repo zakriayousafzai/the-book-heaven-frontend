@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useBooksStore } from '@/app/store/useBooksStore';
-import BookGrid from './BookGrid';
-import BookForm from './BookForm';
-import BookLoading from './BookLoading';
-import { useAuth } from '@clerk/nextjs'
+import { useState, useEffect } from "react";
+import { useBooksStore } from "@/app/store/useBooksStore";
+import BookGrid from "./BookGrid";
+import BookForm from "./BookForm";
+import BookLoading from "./BookLoading";
+import { useAuth } from "@clerk/nextjs";
 
 /**
  * BookList Component
@@ -19,60 +19,58 @@ import { useAuth } from '@clerk/nextjs'
  * - Handles loading states with a loading indicator
  */
 const BookList = () => {
-  const { isSignedIn } = useAuth()
-  const isAuthenticated = isSignedIn;
-  const { booksData } = useBooksStore();
-  const [loading, setLoading] = useState(true);
+    const { isSignedIn } = useAuth();
+    const isAuthenticated = isSignedIn;
+    const { booksData } = useBooksStore();
+    const [loading, setLoading] = useState(true);
 
-  // Update loading state when book data is available
-  useEffect(() => {
-    // Only set loading to false when we have actual book data
-    if (booksData && Array.isArray(booksData)) {
-      setLoading(false);
-    }
-  }, [booksData]);
+    // Update loading state when book data is available
+    useEffect(() => {
+        // Only set loading to false when we have actual book data
+        if (booksData && Array.isArray(booksData)) {
+            setLoading(false);
+        }
+    }, [booksData]);
 
-  // Only show loading state when data is being fetched
-  return (
-    <div className="flex flex-col p-5 items-center">
-      {/* Header section with responsive width */}
-      <span className='md:w-[60vw] lg:w-[50vw] w-[80vw]'>
-        <h1 className="text-4xl text-center m-5">
-          Discover Your Next Great Read at The Book Heaven!
-        </h1>
+    // Only show loading state when data is being fetched
+    return (
+        <div className="flex flex-col p-5 items-center">
+            {/* Header section with responsive width */}
+            <span className="md:w-[60vw] lg:w-[50vw] w-[80vw]">
+                <h1 className="text-4xl text-center m-5">
+                    Discover Your Next Great Read at The Book Heaven!
+                </h1>
 
-        {/* Authentication prompt for non-authenticated users */}
-        {!isAuthenticated && (
-          <div className="mb-4 text-center text-sm">
-            <p className="text-textSecondary">
-              Please login to recommend a book.
-            </p>
-            <p className="text-textSecondary">
-              If you don&apos;t have an account, please register.
-            </p>
-          </div>
-        )}
-      </span>
+                {/* Authentication prompt for non-authenticated users */}
+                {!isAuthenticated && (
+                    <div className="mb-4 text-center text-sm">
+                        <p className="text-textSecondary">
+                            Please login to recommend a book.
+                        </p>
+                        <p className="text-textSecondary">
+                            If you don&apos;t have an account, please register.
+                        </p>
+                    </div>
+                )}
+            </span>
 
-      {/* Book form for authenticated users */}
-      {isAuthenticated && (
-        <BookForm setLoading={setLoading} />
-      )}
+            {/* Book form for authenticated users */}
+            {isAuthenticated && <BookForm setLoading={setLoading} />}
 
-      <h1 className="text-xl text-textSecondary mt-10 mb-3">
-        List of Recommended Books
-      </h1>
+            <h1 className="text-xl text-textSecondary mt-10 mb-3">
+                List of Recommended Books
+            </h1>
 
-      {/* Conditional rendering based on loading state */}
-      {!loading ? (
-        <BookGrid bookData={booksData} />
-      ) : (
-        <div className="mt-10" aria-live="polite" role="status">
-          <BookLoading size="md" />
+            {/* Conditional rendering based on loading state */}
+            {!loading ? (
+                <BookGrid bookData={booksData} />
+            ) : (
+                <div className="mt-10" aria-live="polite" role="status">
+                    <BookLoading size="md" />
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
 export default BookList;

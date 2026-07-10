@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import StarRating from './StarRating';
-import EditableStarRating from './EditableStarRating';
-import axios from 'axios';
-import { useAuth } from '@clerk/nextjs';
-import BookLoading from '@/app/components/BookLoading';
+import StarRating from "./StarRating";
+import EditableStarRating from "./EditableStarRating";
+import axios from "axios";
+import { useAuth } from "@clerk/nextjs";
+import BookLoading from "@/app/components/BookLoading";
 
 /**
  * ReviewCard Component
@@ -38,13 +38,18 @@ const ReviewCard = ({ review, setReviews }) => {
         setLoading(true);
         try {
             const token = await getToken();
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+            await axios.delete(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/reviews/${id}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
                 },
-            });
-            setReviews((prevReviews) => prevReviews.filter((review) => review._id !== id));
+            );
+            setReviews((prevReviews) =>
+                prevReviews.filter((review) => review._id !== id),
+            );
             setError(null);
         } catch (err) {
             console.error("Error deleting review:", err);
@@ -79,16 +84,16 @@ const ReviewCard = ({ review, setReviews }) => {
                 updatedReview,
                 {
                     headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
                     },
-                }
+                },
             );
 
             setReviews((prevReviews) =>
                 prevReviews.map((r) =>
-                    r._id === review._id ? response.data.updatedReview : r
-                )
+                    r._id === review._id ? response.data.updatedReview : r,
+                ),
             );
 
             setIsEditing(false);
@@ -102,7 +107,9 @@ const ReviewCard = ({ review, setReviews }) => {
     };
 
     return (
-        <div key={review._id} className="w-full flex justify-between bg-surface shadow-md p-4 rounded-md">
+        <div
+            key={review._id}
+            className="w-full flex justify-between bg-surface shadow-md p-4 rounded-md">
             {!isEditing ? (
                 <>
                     <div>
@@ -112,17 +119,18 @@ const ReviewCard = ({ review, setReviews }) => {
                         <p className="text-lg font-semibold text-textPrimary w-[60vw] break-words">
                             {review.reviewerName}
                         </p>
-                        <p className="mt-2 text-textSecondary w-[60vw] break-words">{review.comment}</p>
+                        <p className="mt-2 text-textSecondary w-[60vw] break-words">
+                            {review.comment}
+                        </p>
                     </div>
 
-                    {(isAuthenticated && review.userId === userId) && (
+                    {isAuthenticated && review.userId === userId && (
                         <div className="flex flex-col gap-4">
                             {/* Delete Icon */}
                             <button
                                 className="p-2 rounded-full bg-background hover:bg-accent"
                                 aria-label="Delete"
-                                onClick={handleDeleteConfirm}
-                            >
+                                onClick={handleDeleteConfirm}>
                                 <TrashIcon className="w-6 h-6 hover:stroke-black" />
                             </button>
 
@@ -130,22 +138,22 @@ const ReviewCard = ({ review, setReviews }) => {
                             <button
                                 className="p-2 rounded-full bg-background hover:bg-accent"
                                 aria-label="Edit"
-                                onClick={() => setIsEditing(true)}
-                            >
+                                onClick={() => setIsEditing(true)}>
                                 <PencilSquareIcon className="w-6 h-6 hover:stroke-black" />
                             </button>
                         </div>
                     )}
-
                 </>
             ) : (
-                <div className="w-full bg-surface" role="form" aria-label="Edit review">
+                <div
+                    className="w-full bg-surface"
+                    role="form"
+                    aria-label="Edit review">
                     {error && (
                         <div
                             className="mb-4 p-3 bg-red-100 text-red-700 rounded-md"
                             role="alert"
-                            aria-live="polite"
-                        >
+                            aria-live="polite">
                             {error}
                         </div>
                     )}
@@ -153,8 +161,7 @@ const ReviewCard = ({ review, setReviews }) => {
                     <div className="mb-2">
                         <label
                             htmlFor={`rating-${review._id}`}
-                            className="block text-sm font-medium text-secondary mb-2"
-                        >
+                            className="block text-sm font-medium text-secondary mb-2">
                             Rating
                         </label>
                         <EditableStarRating
@@ -167,8 +174,7 @@ const ReviewCard = ({ review, setReviews }) => {
                     <div className="mb-2">
                         <label
                             htmlFor={`comment-${review._id}`}
-                            className="block text-sm font-medium text-secondary"
-                        >
+                            className="block text-sm font-medium text-secondary">
                             Comment
                         </label>
                         <textarea
@@ -188,9 +194,8 @@ const ReviewCard = ({ review, setReviews }) => {
                             className="p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
                             onClick={handleUpdateReview}
                             disabled={loading}
-                            aria-busy={loading}
-                        >
-                            {loading ? 'Saving...' : 'Save'}
+                            aria-busy={loading}>
+                            {loading ? "Saving..." : "Save"}
                         </button>
                         <button
                             type="button"
@@ -198,8 +203,7 @@ const ReviewCard = ({ review, setReviews }) => {
                             onClick={() => {
                                 setIsEditing(false);
                                 setError(null);
-                            }}
-                        >
+                            }}>
                             Cancel
                         </button>
                     </div>
@@ -207,7 +211,7 @@ const ReviewCard = ({ review, setReviews }) => {
             )}
 
             {loading && (
-                <div className='absolute text-center right-0 left-0'>
+                <div className="absolute text-center right-0 left-0">
                     <BookLoading size="lg" />
                 </div>
             )}
@@ -216,19 +220,21 @@ const ReviewCard = ({ review, setReviews }) => {
             {showDeleteConfirm && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-surface p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold text-textPrimary mb-4">Delete Review</h3>
-                        <p className="text-textSecondary mb-6">Are you sure you want to delete this review?</p>
+                        <h3 className="text-lg font-semibold text-textPrimary mb-4">
+                            Delete Review
+                        </h3>
+                        <p className="text-textSecondary mb-6">
+                            Are you sure you want to delete this review?
+                        </p>
                         <div className="flex justify-end gap-4">
                             <button
                                 className="px-4 py-2 bg-secondary text-textPrimary rounded hover:bg-gray-600"
-                                onClick={handleDeleteCancel}
-                            >
+                                onClick={handleDeleteCancel}>
                                 Cancel
                             </button>
                             <button
                                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                                onClick={() => handleDeleteReview(review._id)}
-                            >
+                                onClick={() => handleDeleteReview(review._id)}>
                                 Delete
                             </button>
                         </div>

@@ -1,5 +1,5 @@
-import React from 'react'
-import BookCard from './BookCard'
+import React from "react";
+import BookCard from "./BookCard";
 
 /**
  * BookGrid Component
@@ -12,14 +12,12 @@ import BookCard from './BookCard'
  * @param {string} bookData[]._id - Book unique identifier
  */
 const BookGrid = ({ bookData }) => {
-
     return (
         <div className="relative bg-background w-full h-auto p-2 flex justify-center items-center">
-
             <div className="absolute top-0 w-full h-1 bg-border"></div>
 
             {/* Responsive grid layout for book cards */}
-            <div className='mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 w-full'>
+            <div className="mt-5 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 w-full">
                 {/* Display books in reverse chronological order */}
                 {bookData
                     .slice()
@@ -34,9 +32,8 @@ const BookGrid = ({ bookData }) => {
                         />
                     ))}
             </div>
-
         </div>
-    )
-}
+    );
+};
 
-export default BookGrid
+export default BookGrid;

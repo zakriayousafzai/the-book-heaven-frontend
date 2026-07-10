@@ -1,22 +1,27 @@
-'use client';
+"use client";
 
-import React from 'react'
-import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { useAuth } from '@clerk/nextjs';
-import { useBooksStore } from '@/app/store/useBooksStore';
-import Modal from './Modal';
+import React from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
+import { useAuth } from "@clerk/nextjs";
+import { useBooksStore } from "@/app/store/useBooksStore";
+import Modal from "./Modal";
 
-const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = null }) => {
+const BookForm = ({
+    setLoading,
+    isOpen: externalIsOpen,
+    onClose,
+    existingBook = null,
+}) => {
     const { getToken } = useAuth();
     const { setBooksData } = useBooksStore();
     const [isOpen, setIsOpen] = useState(externalIsOpen || false);
     // Initialize form state with empty values or existing book data
     const [bookData, setBookData] = useState({
-        title: '',
-        author: '',
-        genre: '',
-        description: '',
+        title: "",
+        author: "",
+        genre: "",
+        description: "",
     });
 
     // Track modal visibility state
@@ -41,9 +46,9 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
      */
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setBookData(prevData => ({
+        setBookData((prevData) => ({
             ...prevData,
-            [name]: value
+            [name]: value,
         }));
     };
 
@@ -66,10 +71,10 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
         e.preventDefault();
         setLoading(true);
 
-        const token = await getToken()
+        const token = await getToken();
         const headers = {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         };
 
         try {
@@ -79,33 +84,35 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
                 response = await axios.put(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/books/${existingBook._id}`,
                     bookData,
-                    { headers }
+                    { headers },
                 );
 
                 // Update books list while preserving order
-                setBooksData(prev => prev.map(book =>
-                    book._id === existingBook._id ? response.data : book
-                ));
+                setBooksData((prev) =>
+                    prev.map((book) =>
+                        book._id === existingBook._id ? response.data : book,
+                    ),
+                );
             } else {
                 // Create new book
                 response = await axios.post(
                     `${process.env.NEXT_PUBLIC_API_URL}/api/books`,
                     bookData,
-                    { headers }
+                    { headers },
                 );
 
                 // Add new book to list
-                setBooksData(prev => [...prev, response.data]);
+                setBooksData((prev) => [...prev, response.data]);
             }
 
             // Reset form and close modal on success
-            setBookData({ title: '', author: '', genre: '', description: '' });
+            setBookData({ title: "", author: "", genre: "", description: "" });
             handleClose();
 
-            const action = existingBook ? 'updated' : 'added';
+            const action = existingBook ? "updated" : "added";
             console.log(`Book ${action} successfully`);
         } catch (err) {
-            const action = existingBook ? 'updating' : 'adding';
+            const action = existingBook ? "updating" : "adding";
             console.error(`Error ${action} book:`, err.message);
             // TODO: Add user-facing error handling
         } finally {
@@ -116,23 +123,19 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
     return (
         <>
             {!existingBook && (
-                <div className='flex justify-center flex-col items-center'>
+                <div className="flex justify-center flex-col items-center">
                     <button
                         className="w-full sm:w-[50vw] p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
-                        onClick={() => setIsOpen(true)}
-                    >
+                        onClick={() => setIsOpen(true)}>
                         Add New Book to Recommend
                     </button>
                 </div>
             )}
 
             <Modal isOpen={isOpen} onClose={handleClose}>
-                <form
-                    onSubmit={handleFormSubmit}
-                    className="flex flex-col p-6"
-                >
+                <form onSubmit={handleFormSubmit} className="flex flex-col p-6">
                     <h2 className="text-xl font-semibold mb-4">
-                        {existingBook ? 'Edit Book' : 'Add a New Book'}
+                        {existingBook ? "Edit Book" : "Add a New Book"}
                     </h2>
                     {/* Title */}
                     <label className="mb-2 font-medium">
@@ -185,22 +188,20 @@ const BookForm = ({ setLoading, isOpen: externalIsOpen, onClose, existingBook = 
                     <div className="flex gap-2 mt-4">
                         <button
                             type="submit"
-                            className={`flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600`}
-                        >
-                            {existingBook ? 'Save Changes' : 'Save Book'}
+                            className={`flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600`}>
+                            {existingBook ? "Save Changes" : "Save Book"}
                         </button>
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
-                        >
+                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600">
                             Cancel
                         </button>
                     </div>
                 </form>
             </Modal>
         </>
-    )
-}
+    );
+};
 
-export default BookForm
+export default BookForm;
