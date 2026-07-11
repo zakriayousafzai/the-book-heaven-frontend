@@ -1,59 +1,16 @@
-"use client";
+import { currentUser } from "@clerk/nextjs/server";
+import FetchData from "./Components/FetchData";
 
-import React, { useState, useEffect, useCallback, use } from "react";
-import BookGrid from "@/app/components/BookGrid";
-import BookLoading from "@/app/components/BookLoading";
-import axios from "axios";
-import { useUser, getToken } from "@clerk/nextjs";
+const dashboard = async () => {
+    const user = await currentUser();
+    const username = user.username;
 
-const PublicProfile = () => {
-    const { user } = useUser();
-    const username = user?.username;
-    const [recommendedBooks, setRecommendedBooks] = useState([]);
-    const [favoriteBooks, setFavoriteBooks] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    /**
-     * Fetches and filters books recommended by this user
-     */
-    const fetchData = useCallback(async () => {
-        try {
-            setLoading(true);
-
-            const token = await getToken();
-
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}`,
-                {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            }
-            );
-            console.log(response.data)
-            setRecommendedBooks(response.data.recommendedBooks);
-            setFavoriteBooks(response.data.favoriteBooks);
-
-            setError(null);
-        } catch (err) {
-            console.error("Error fetching recommended books:", err);
-            setError("Failed to load recommended books");
-        } finally {
-            setLoading(false);
-        }
-    }, [username]);
-
-    useEffect(() => {
-        fetchData();
-    }, [fetchData]);
-
-    /**
-     * Renders user profile information section
-     */
-    const renderUserDetails = () => (
+    return (
         <div
+            className="container mx-auto px-4 py-8"
+            role="main"
+            aria-label={`${username}'s public profile`}>
+            <div
             className="bg-surface rounded-lg border border-border p-6 mb-6"
             role="region"
             aria-label="User profile information">
@@ -65,68 +22,11 @@ const PublicProfile = () => {
                 </div>
             </div>
         </div>
-    );
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center h-screen">
-                <BookLoading size="lg" />
-            </div>
-        );
-    }
+            <FetchData userName={username} />
 
-    return (
-        <div
-            className="container mx-auto px-4 py-8"
-            role="main"
-            aria-label={`${username}'s public profile`}>
-            {renderUserDetails()}
-
-            {error && (
-                <div
-                    className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6"
-                    role="alert"
-                    aria-live="polite">
-                    {error}
-                </div>
-            )}
-
-            <div className="mb-6">
-                <div
-                    className="bg-surface rounded-lg border border-border p-6"
-                    role="region"
-                    aria-label="Recommended books">
-                    <h2 className="text-2xl mb-3">
-                        Favorite Books ({favoriteBooks?.length})
-                    </h2>
-                    {favoriteBooks.length > 0 ? (
-                        <BookGrid bookData={favoriteBooks} />
-                    ) : (
-                        <p className="text-textSecondary">
-                            no favorite books yet
-                        </p>
-                    )}
-                </div>
-            </div>
-            <div className="mb-6">
-                <div
-                    className="bg-surface rounded-lg border border-border p-6"
-                    role="region"
-                    aria-label="Recommended books">
-                    <h2 className="text-2xl mb-3">
-                        Recommended Books ({recommendedBooks?.length})
-                    </h2>
-                    {recommendedBooks.length > 0 ? (
-                        <BookGrid bookData={recommendedBooks} />
-                    ) : (
-                        <p className="text-textSecondary">
-                            This user hasn&apos;t recommended any books yet.
-                        </p>
-                    )}
-                </div>
-            </div>
         </div>
     );
 };
 
-export default PublicProfile;
+export default dashboard;
