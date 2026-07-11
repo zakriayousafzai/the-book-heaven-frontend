@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { StoreInitializer } from "./components/StoreInitializer";
 import { ClerkProvider } from "@clerk/nextjs";
+import Navbar from "./components/Navbar";
 
 // Font configuration
 const geistSans = Geist({
@@ -35,6 +36,9 @@ export default function RootLayout({ children }) {
                 className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
                 <ClerkProvider>
                     <StoreInitializer />
+                    <header>
+                        <Navbar />
+                    </header>
                     {children}
                 </ClerkProvider>
             </body>

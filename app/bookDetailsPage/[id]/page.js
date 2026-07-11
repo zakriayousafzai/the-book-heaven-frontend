@@ -8,7 +8,6 @@ import EditableStarRating from "./components/EditableStarRating";
 import { BookDetails } from "./components/BookDetails";
 import { RelatedBooks } from "./components/RelatedBooks";
 import ReviewCard from "./components/ReviewCard";
-import Navbar from "@/app/components/Navbar";
 import BookLoading from "@/app/components/BookLoading";
 
 const BookDetailsPage = ({ params }) => {
@@ -121,7 +120,6 @@ const BookDetailsPage = ({ params }) => {
 
     return (
         <main className="flex flex-col min-h-screen">
-            <Navbar />
 
             {/* Book Details Section */}
             <div className="relative flex px-5 py-10 h-full cursor-default text-textPrimary">

@@ -5,7 +5,7 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
     return (
-        <>
+        <div className="flex flex-col w-full bg-background border-b border-border">
             <div className="flex justify-between items-center h-[10vh] bg-background sticky top-0 z-10 text-textPrimary p-3">
                 <div className="flex items-center">
                     <h1 className=" w-max sm:ml-6">
@@ -53,11 +53,8 @@ const Navbar = () => {
                         </SignUpButton>
                     </Show>
                 </div>
-
-                {/* Decorative border line at the bottom of the navbar */}
-                <div className="absolute bottom-0 w-full h-1 bg-border"></div>
             </div>
-        </>
+        </div>
     );
 };
 
