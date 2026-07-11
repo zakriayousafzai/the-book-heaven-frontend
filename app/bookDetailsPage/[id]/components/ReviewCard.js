@@ -98,6 +98,7 @@ const ReviewCard = ({ review, setReviews }) => {
 
             setIsEditing(false);
             setError(null);
+            setLoading(false);
         } catch (err) {
             console.error("Error updating review:", err);
             setError("Failed to update review. Please try again.");

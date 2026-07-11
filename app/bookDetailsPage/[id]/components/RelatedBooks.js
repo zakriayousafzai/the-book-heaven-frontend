@@ -1,18 +1,28 @@
 "use client";
 
+import { use, useMemo } from "react";
 import BookGrid from "@/app/components/BookGrid";
+import { useBooksStore } from "@/app/store/useBooksStore";
 
-/**
- * RelatedBooks Component
- * Displays a grid of books that share the same genre as the current book
- *
- * @param {Object} props
- * @param {Array} props.books - Array of related books to display
- */
-export const RelatedBooks = ({ books }) => {
+export const RelatedBooks = ({ params }) => {
+    const { booksData } = useBooksStore();
+    const param = use(params);
+    const id = param.id;
+
+    // Find current book
+    const currentBook = useMemo(
+        () => booksData?.find((book) => book._id === id),
+        [booksData, id],
+    );
+
+    // Filter related books
+    const relatedBooks = useMemo(() => {
+        if (!currentBook) return [];
+        return booksData?.filter((book) => book.genre === currentBook.genre);
+    }, [currentBook, booksData]);
+
     // Don't render if there are no related books
-    if (!books || !books.length) return null;
-
+    if (!relatedBooks || !relatedBooks.length) return null;
     return (
         <section
             className="w-full h-auto py-5 px-7 flex flex-col justify-center sm:px-14"
@@ -20,10 +30,10 @@ export const RelatedBooks = ({ books }) => {
             <h2
                 id="related-books-heading"
                 className="text-2xl text-textSecondary mb-4">
-                Related Books ({books.length})
+                Related Books ({relatedBooks.length})
             </h2>
             <div className="relative">
-                <BookGrid bookData={books} />
+                <BookGrid bookData={relatedBooks} />
             </div>
         </section>
     );

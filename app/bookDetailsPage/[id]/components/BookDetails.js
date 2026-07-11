@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use, useMemo } from "react";
 import { TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import { HeartIcon } from "@heroicons/react/24/solid";
 import { useAuth } from "@clerk/nextjs";
@@ -10,14 +10,9 @@ import axios from "axios";
 import Link from "next/link";
 import BookForm from "@/app/components/BookForm";
 
-/**
- * BookDetails Component
- * Displays detailed information about a book with editing and favorite functionality
- *
- * @param {Object} props
- * @param {Object} props.book - Book data to display
- */
-export const BookDetails = ({ book }) => {
+export const BookDetails = ({ params }) => {
+    const param = use(params);
+    const id = param.id;
     const { isSignedIn, getToken, userId } = useAuth();
     const isAuthenticated = isSignedIn;
     const { favoritesData, setFavoritesData } = useFavoriteStore();
@@ -29,10 +24,16 @@ export const BookDetails = ({ book }) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const [error, setError] = useState(null);
 
+    // Find current book
+    const book = useMemo(
+        () => booksData?.find((book) => book._id === id),
+        [booksData, id],
+    );
+
     useEffect(() => {
         const isFavorite = favoritesData.some((fav) => fav._id === book._id);
         setIsFavorite(isFavorite);
-    }, [favoritesData, book._id]);
+    }, [favoritesData, book]);
 
     /**
      * Adds the current book to user's favorites
