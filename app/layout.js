@@ -36,7 +36,7 @@ export default function RootLayout({ children }) {
                 className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}>
                 <ClerkProvider>
                     <StoreInitializer />
-                    <header>
+                    <header className="sticky top-0 z-10">
                         <Navbar />
                     </header>
                     {children}

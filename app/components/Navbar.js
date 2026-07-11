@@ -6,7 +6,7 @@ import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 const Navbar = () => {
     return (
         <div className="flex flex-col w-full bg-background border-b border-border">
-            <div className="flex justify-between items-center h-[10vh] bg-background sticky top-0 z-10 text-textPrimary p-3">
+            <div className="flex justify-between items-center h-[10vh] bg-background text-textPrimary p-3">
                 <div className="flex items-center">
                     <h1 className=" w-max sm:ml-6">
                         <Link
