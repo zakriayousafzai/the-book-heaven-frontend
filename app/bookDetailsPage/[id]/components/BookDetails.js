@@ -30,7 +30,7 @@ export const BookDetails = ({ book }) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const isFavorite = favoritesData.some((fav) => fav.bookId === book._id);
+        const isFavorite = favoritesData.some((fav) => fav._id === book._id);
         setIsFavorite(isFavorite);
     }, [favoritesData, book._id]);
 
@@ -54,7 +54,7 @@ export const BookDetails = ({ book }) => {
                 },
             );
             setIsFavorite(true);
-            setFavoritesData([...favoritesData, response.data]);
+            setFavoritesData(response.data);
             setError(null);
         } catch (err) {
             console.error("Error adding favorite:", err);
@@ -80,7 +80,7 @@ export const BookDetails = ({ book }) => {
                 },
             );
             setFavoritesData(
-                favoritesData.filter((fav) => fav.bookId !== book._id),
+                favoritesData.filter((fav) => fav._id !== book._id),
             );
             setIsFavorite(false);
             setError(null);

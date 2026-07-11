@@ -4,26 +4,37 @@ import React, { useState, useEffect, useCallback, use } from "react";
 import BookGrid from "@/app/components/BookGrid";
 import BookLoading from "@/app/components/BookLoading";
 import axios from "axios";
-import { useUser } from "@clerk/nextjs";
+import { useUser, getToken } from "@clerk/nextjs";
 
 const PublicProfile = () => {
     const { user } = useUser();
-    const username = user.username;
+    const username = user?.username;
     const [recommendedBooks, setRecommendedBooks] = useState([]);
+    const [favoriteBooks, setFavoriteBooks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     /**
      * Fetches and filters books recommended by this user
      */
-    const fetchRecommendedBooks = useCallback(async () => {
+    const fetchData = useCallback(async () => {
         try {
             setLoading(true);
 
+            const token = await getToken();
+
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/users/${username}`,
+                {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
             );
-            setRecommendedBooks(response.data.books);
+            console.log(response.data)
+            setRecommendedBooks(response.data.recommendedBooks);
+            setFavoriteBooks(response.data.favoriteBooks);
 
             setError(null);
         } catch (err) {
@@ -35,8 +46,8 @@ const PublicProfile = () => {
     }, [username]);
 
     useEffect(() => {
-        fetchRecommendedBooks();
-    }, [fetchRecommendedBooks]);
+        fetchData();
+    }, [fetchData]);
 
     /**
      * Renders user profile information section
@@ -86,7 +97,24 @@ const PublicProfile = () => {
                     role="region"
                     aria-label="Recommended books">
                     <h2 className="text-2xl mb-3">
-                        Recommended Books ({recommendedBooks.length})
+                        Favorite Books ({favoriteBooks?.length})
+                    </h2>
+                    {favoriteBooks.length > 0 ? (
+                        <BookGrid bookData={favoriteBooks} />
+                    ) : (
+                        <p className="text-textSecondary">
+                            no favorite books yet
+                        </p>
+                    )}
+                </div>
+            </div>
+            <div className="mb-6">
+                <div
+                    className="bg-surface rounded-lg border border-border p-6"
+                    role="region"
+                    aria-label="Recommended books">
+                    <h2 className="text-2xl mb-3">
+                        Recommended Books ({recommendedBooks?.length})
                     </h2>
                     {recommendedBooks.length > 0 ? (
                         <BookGrid bookData={recommendedBooks} />
