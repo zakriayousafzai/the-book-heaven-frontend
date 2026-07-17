@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import SearchBar from "./SearchBar";
 import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
