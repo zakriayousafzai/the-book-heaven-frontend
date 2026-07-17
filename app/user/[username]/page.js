@@ -1,9 +1,9 @@
-import { currentUser } from "@clerk/nextjs/server";
+import {react, use} from "react";
 import FetchData from "./Components/FetchData";
 
-const PublicProfile = async () => {
-    const user = await currentUser();
-    const username = user.username;
+const PublicProfile = ({params}) => {
+    const param = use(params);
+    const username = param.username;
 
     return (
         <div
