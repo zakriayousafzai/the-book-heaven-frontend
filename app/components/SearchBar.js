@@ -1,60 +1,75 @@
 "use client";
 
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useBooksStore } from "@/app/store/useBooksStore";
+import axios from "axios";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-/**
- * Search configuration constants
- */
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 const SEARCH_CONFIG = {
-    MAX_RESULTS: 5, // Maximum number of search results to display
-    MIN_LENGTH: 2, // Minimum characters required to trigger search
-    DEBOUNCE_MS: 300, // Debounce delay for search updates
+    MAX_RESULTS: 5,
+    MIN_LENGTH: 2,
+    DEBOUNCE_MS: 300,
 };
 
-/**
- * SearchBar Component
- * Provides real-time search functionality with keyboard navigation and accessibility support
- */
 const SearchBar = () => {
-    const { booksData } = useBooksStore();
+    const [inputValue, setInputValue] = useState("");
+    const [matchingBooks, setMatchingBooks] = useState([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
 
-    const [inputValue, setInputValue] = useState(""); // Search input text
-    const [isOpen, setIsOpen] = useState(false); // Dropdown visibility
-    const [selectedIndex, setSelectedIndex] = useState(-1); // Keyboard navigation index
+    const searchRef = useRef(null);
+    const inputRef = useRef(null);
+    const abortControllerRef = useRef(null);
+    const debounceTimerRef = useRef(null);
 
-    // Refs for DOM elements
-    const searchRef = useRef(null); // Reference to search container for click outside detection
-    const inputRef = useRef(null); // Reference to input element for focus management
+    useEffect(() => {
+        if (debounceTimerRef.current) {
+            clearTimeout(debounceTimerRef.current);
+        }
 
-    /**
-     * Memoized search results to prevent unnecessary recalculations
-     * Filters books based on search term and returns limited results
-     */
-    const matchingBooks = useMemo(() => {
-        if (inputValue.length < SEARCH_CONFIG.MIN_LENGTH) return [];
+        if (inputValue.length < SEARCH_CONFIG.MIN_LENGTH) {
+            setMatchingBooks([]);
+            setIsSearching(false);
+            return;
+        }
 
-        const searchTerm = inputValue.toLowerCase();
-        const matchingResults = booksData
-            .filter((book) => {
-                // Search across multiple fields with null checks
-                const titleMatch = book.title
-                    ?.toLowerCase()
-                    .includes(searchTerm);
-                const authorMatch = book.author
-                    ?.toLowerCase()
-                    .includes(searchTerm);
-                const genreMatch = book.genre
-                    ?.toLowerCase()
-                    .includes(searchTerm);
-                return titleMatch || authorMatch || genreMatch;
-            })
-            .slice(0, SEARCH_CONFIG.MAX_RESULTS);
+        setIsSearching(true);
 
-        return matchingResults;
-    }, [inputValue, booksData]);
+        debounceTimerRef.current = setTimeout(async () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+
+            const controller = new AbortController();
+            abortControllerRef.current = controller;
+
+            try {
+                const response = await axios.get(
+                    `${API_URL}/api/books/search?q=${encodeURIComponent(inputValue)}`,
+                    { signal: controller.signal },
+                );
+                setMatchingBooks(response.data.slice(0, SEARCH_CONFIG.MAX_RESULTS));
+            } catch (err) {
+                if (!axios.isCancel(err)) {
+                    console.error("Search error:", err);
+                    setMatchingBooks([]);
+                }
+            } finally {
+                if (!controller.signal.aborted) {
+                    setIsSearching(false);
+                }
+            }
+        }, SEARCH_CONFIG.DEBOUNCE_MS);
+
+        return () => {
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+        };
+    }, [inputValue]);
 
     // Handle clicks outside of search component
     useEffect(() => {
@@ -170,8 +185,11 @@ const SearchBar = () => {
                         role="listbox"
                         className="absolute top-full mt-1 w-52 sm:w-96 bg-background border-[1px] 
                      border-border rounded-md shadow-lg z-10 max-h-[60vh] overflow-y-auto">
-                        {matchingBooks.length > 0 ? (
-                            // Map through matching books
+                        {isSearching ? (
+                            <div className="p-3 text-textSecondary text-center">
+                                Searching...
+                            </div>
+                        ) : matchingBooks.length > 0 ? (
                             matchingBooks.map((book, index) => (
                                 <Link
                                     key={book._id}
@@ -183,7 +201,6 @@ const SearchBar = () => {
                                         aria-selected={selectedIndex === index}
                                         className={`flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer
                               ${selectedIndex === index ? "bg-secondary" : "bg-surface"}`}>
-                                        {/* book details */}
                                         <div className="flex flex-col">
                                             <span className="text-textPrimary font-medium">
                                                 {book.title}
@@ -199,7 +216,6 @@ const SearchBar = () => {
                                 </Link>
                             ))
                         ) : (
-                            // Display appropriate message based on search state
                             <div className="p-3 text-textSecondary text-center">
                                 {inputValue.length >= SEARCH_CONFIG.MIN_LENGTH
                                     ? "No results found"
