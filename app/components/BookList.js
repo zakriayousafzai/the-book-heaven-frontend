@@ -1,47 +1,46 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useBooksStore } from "@/app/store/useBooksStore";
 import BookGrid from "./BookGrid";
 import BookForm from "./BookForm";
 import BookLoading from "./BookLoading";
+import Pagination from "./Pagination";
 import { useAuth } from "@clerk/nextjs";
 
-/**
- * BookList Component
- * Main container component for the book listing page
- * Handles authentication state, loading states, and book data display
- *
- * Features:
- * - Displays a welcome message and authentication prompt
- * - Shows book form for authenticated users
- * - Displays grid of recommended books
- * - Handles loading states with a loading indicator
- */
 const BookList = () => {
     const { isSignedIn } = useAuth();
     const isAuthenticated = isSignedIn;
-    const { booksData } = useBooksStore();
-    const [loading, setLoading] = useState(true);
+    const {
+        booksData,
+        loading,
+        currentPage,
+        totalPages,
+        fetchBooks,
+    } = useBooksStore();
+    const [initialLoading, setInitialLoading] = useState(true);
 
-    // Update loading state when book data is available
     useEffect(() => {
-        // Only set loading to false when we have actual book data
-        if (booksData && Array.isArray(booksData)) {
-            setLoading(false);
+        if (booksData && booksData.length > 0) {
+            setInitialLoading(false);
         }
     }, [booksData]);
 
-    // Only show loading state when data is being fetched
+    const handlePageChange = useCallback(
+        (page) => {
+            setInitialLoading(true);
+            fetchBooks({ page }).then(() => setInitialLoading(false));
+        },
+        [fetchBooks],
+    );
+
     return (
         <div className="flex flex-col p-5 items-center">
-            {/* Header section with responsive width */}
             <span className="md:w-[60vw] lg:w-[50vw] w-[80vw]">
                 <h1 className="text-4xl text-center m-5">
                     Discover Your Next Great Read at The Book Heaven!
                 </h1>
 
-                {/* Authentication prompt for non-authenticated users */}
                 {!isAuthenticated && (
                     <div className="mb-4 text-center text-sm">
                         <p className="text-textSecondary">
@@ -54,16 +53,21 @@ const BookList = () => {
                 )}
             </span>
 
-            {/* Book form for authenticated users */}
-            {isAuthenticated && <BookForm setLoading={setLoading} />}
+            {isAuthenticated && <BookForm setLoading={setInitialLoading} />}
 
             <h1 className="text-xl text-textSecondary mt-10 mb-3">
                 List of Recommended Books
             </h1>
 
-            {/* Conditional rendering based on loading state */}
-            {!loading ? (
-                <BookGrid bookData={booksData} />
+            {!initialLoading ? (
+                <>
+                    <BookGrid bookData={booksData} />
+                    <Pagination
+                        currentPage={currentPage}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </>
             ) : (
                 <div className="mt-10" aria-live="polite" role="status">
                     <BookLoading size="md" />

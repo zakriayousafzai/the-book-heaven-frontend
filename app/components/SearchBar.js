@@ -51,7 +51,7 @@ const SearchBar = () => {
                     `${API_URL}/api/books/search?q=${encodeURIComponent(inputValue)}`,
                     { signal: controller.signal },
                 );
-                setMatchingBooks(response.data.slice(0, SEARCH_CONFIG.MAX_RESULTS));
+                setMatchingBooks(response.data.data.slice(0, SEARCH_CONFIG.MAX_RESULTS));
             } catch (err) {
                 if (!axios.isCancel(err)) {
                     console.error("Search error:", err);

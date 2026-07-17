@@ -1,39 +1,39 @@
 "use client";
 
-import { useMemo, useState, useEffect, use } from "react";
+import { useState, useEffect, use, useCallback } from "react";
 import { useBooksStore } from "@/app/store/useBooksStore";
 import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import EditableStarRating from "./EditableStarRating";
 import ReviewCard from "./ReviewCard";
 import BookLoading from "@/app/components/BookLoading";
+import Pagination from "@/app/components/Pagination";
 
-const ReviewSection = ({params}) => {
+const ReviewSection = ({ params }) => {
     const { isSignedIn, userName, getToken } = useAuth();
     const isAuthenticated = isSignedIn;
     const { booksData } = useBooksStore();
     const param = use(params);
     const id = param.id;
-        // State management
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
-    // Form state
     const [rating, setRating] = useState(1);
     const [comment, setComment] = useState("");
 
-    useEffect(() => {
-        if (booksData) {
-            setLoading(false);
-        }
-
-        const fetchReviews = async () => {
+    const fetchReviews = useCallback(
+        async (page = 1) => {
             try {
                 const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews?page=${page}&limit=5`,
                 );
-                setReviews(response.data);
+                setReviews(response.data.data);
+                setCurrentPage(response.data.pagination.currentPage);
+                setTotalPages(response.data.pagination.totalPages);
                 setError(null);
             } catch (err) {
                 setError("Failed to load reviews. Please try again later.");
@@ -41,14 +41,28 @@ const ReviewSection = ({params}) => {
             } finally {
                 setLoading(false);
             }
-        };
+        },
+        [id],
+    );
+
+    useEffect(() => {
+        if (booksData) {
+            setLoading(false);
+        }
 
         if (id) {
-            fetchReviews();
+            fetchReviews(1);
         }
-    }, [booksData, id, userName]);
+    }, [booksData, id, userName, fetchReviews]);
 
-    // Handle review submission
+    const handlePageChange = useCallback(
+        (page) => {
+            setLoading(true);
+            fetchReviews(page).then(() => setLoading(false));
+        },
+        [fetchReviews],
+    );
+
     const handleReviewSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -62,9 +76,8 @@ const ReviewSection = ({params}) => {
         const newReview = { rating, comment };
 
         try {
-            // Send the new review to the backend
             const token = await getToken();
-            const response = await axios.post(
+            await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}/reviews`,
                 newReview,
                 {
@@ -75,10 +88,7 @@ const ReviewSection = ({params}) => {
                 },
             );
 
-            setReviews((prevReviews) => [
-                ...prevReviews,
-                response.data.newReview,
-            ]);
+            await fetchReviews(currentPage);
             console.log("Review submitted successfully");
         } catch (err) {
             console.error("Error submitting review:", err);
@@ -89,11 +99,11 @@ const ReviewSection = ({params}) => {
             setComment("");
         }
     };
+
     return (
         <section className="px-5 py-10 sm:px-14">
             <h2 className="text-2xl font-semibold mb-5">Reviews</h2>
 
-            {/* Display existing reviews */}
             <div className="space-y-4 mb-6">
                 {reviews.length > 0 ? (
                     reviews.map((review) => (
@@ -110,6 +120,12 @@ const ReviewSection = ({params}) => {
                 )}
             </div>
 
+            <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+            />
+
             {loading && (
                 <div className="absolute text-center right-0 left-0">
                     <BookLoading size="lg" />
@@ -124,7 +140,6 @@ const ReviewSection = ({params}) => {
                 </div>
             )}
 
-            {/* Review submission form for authenticated users */}
             {isAuthenticated && (
                 <form
                     onSubmit={handleReviewSubmit}
@@ -139,7 +154,6 @@ const ReviewSection = ({params}) => {
                         </div>
                     )}
 
-                    {/* Rating selection */}
                     <div className="">
                         <label
                             htmlFor="rating"
@@ -154,7 +168,6 @@ const ReviewSection = ({params}) => {
                         />
                     </div>
 
-                    {/* Review comment */}
                     <div>
                         <label
                             htmlFor="comment"
