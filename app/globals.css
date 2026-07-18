@@ -4,22 +4,22 @@
 
 :root {
   /* Theme Colors */
-  --color-primary: #1F77FF;
-  --color-secondary: #4E5D78;
-  --color-accent: #FFB703;
+  --color-primary: #d97706; /* Bronze / Amber-600 */
+  --color-secondary: #3f3f46; /* Zinc-700 */
+  --color-accent: #c4a484; /* Soft warm paper / Light Bronze */
   
   /* Background Colors */
-  --color-background: #080C16;
-  --color-surface: #0E141F;
-  --color-border: #1C2838;
+  --color-background: #09090b; /* Zinc-950 */
+  --color-surface: #18181b; /* Zinc-900 */
+  --color-border: #27272a; /* Zinc-800 */
   
   /* Typography Colors */
-  --color-text-primary: #F5F7FA;
-  --color-text-secondary: #AAB4C5;
+  --color-text-primary: #f4f4f5; /* Zinc-100 */
+  --color-text-secondary: #a1a1aa; /* Zinc-400 */
   
   /* Focus and Interactive States */
-  --color-focus-ring: rgba(31, 119, 255, 0.5);
-  --color-hover-overlay: rgba(255, 255, 255, 0.1);
+  --color-focus-ring: rgba(217, 119, 6, 0.4);
+  --color-hover-overlay: rgba(255, 255, 255, 0.05);
 }
 
 
@@ -43,9 +43,42 @@ button,
 input,
 textarea {
   color: var(--color-text-primary);
+  font-family: var(--font-geist-sans), sans-serif;
 }
 
-
 body {
-  @apply bg-background h-screen w-full bg-cover bg-center bg-no-repeat bg-fixed;
+  background-color: var(--color-background);
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(217, 119, 6, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(196, 164, 132, 0.04) 0%, transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Custom Scrollbars matching the Zinc & Bronze Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(63, 63, 70, 0.5); /* Zinc-700 alpha */
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(217, 119, 6, 0.7); /* Amber-600 / Bronze hover alpha */
+}
+
+/* Firefox compatibility */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(63, 63, 70, 0.5) transparent;
 }

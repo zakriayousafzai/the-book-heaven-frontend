@@ -10,18 +10,29 @@ const AdminPage = async () => {
     }
 
     return (
-        <div
-            className="container mx-auto px-4 py-8"
-            role="main"
-            aria-label="Admin dashboard">
-            <div className="bg-surface rounded-lg border border-border p-6 mb-6">
-                <h1 className="text-2xl font-bold text-textPrimary">
-                    Admin Dashboard
-                </h1>
-            </div>
+        <main className="w-full py-8 md:py-16">
+            <div
+                className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10"
+                role="main"
+                aria-label="Admin dashboard">
+                
+                {/* Admin Header */}
+                <div className="border-b border-border/80 pb-6 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-textPrimary tracking-tight">
+                            Admin Control Panel
+                        </h1>
+                        <p className="text-xs text-textSecondary mt-1 uppercase tracking-widest font-mono">
+                            System Overview & Book Moderation
+                        </p>
+                    </div>
+                </div>
 
-            <AdminDashboard />
-        </div>
+                <div className="space-y-8">
+                    <AdminDashboard />
+                </div>
+            </div>
+        </main>
     );
 };
 

@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@clerk/nextjs";
 import { useBooksStore } from "@/app/store/useBooksStore";
 import Modal from "./Modal";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 const BookForm = ({
     setLoading = () => {},
@@ -123,79 +124,97 @@ const BookForm = ({
     return (
         <>
             {!existingBook && (
-                <div className="flex justify-center flex-col items-center">
+                <div className="flex justify-center items-center">
                     <button
-                        className="w-full sm:w-[50vw] p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600"
+                        className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-amber-700 active:scale-[0.98] text-white px-8 py-3.5 rounded-full font-semibold shadow-lg shadow-primary/20 transition-all cursor-pointer text-sm sm:text-base"
                         onClick={() => setIsOpen(true)}>
-                        Add New Book to Recommend
+                        <PlusIcon className="w-4 h-4 sm:w-5 h-5 text-white" />
+                        Recommend a Book
                     </button>
                 </div>
             )}
 
             <Modal isOpen={isOpen} onClose={handleClose}>
-                <form onSubmit={handleFormSubmit} className="flex flex-col p-6">
-                    <h2 className="text-xl font-semibold mb-4">
-                        {existingBook ? "Edit Book" : "Add a New Book"}
+                <form onSubmit={handleFormSubmit} className="flex flex-col p-6 sm:p-8">
+                    <h2 className="text-xl font-bold text-textPrimary tracking-tight mb-6">
+                        {existingBook ? "Edit Recommendation" : "Recommend a Book"}
                     </h2>
+                    
                     {/* Title */}
-                    <label className="mb-2 font-medium">
-                        Title
+                    <div className="flex flex-col mb-4">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                            Book Title
+                        </label>
                         <input
                             type="text"
                             name="title"
                             value={bookData.title}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            placeholder="e.g. The Great Gatsby"
+                            className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-textPrimary placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                             required
                         />
-                    </label>
+                    </div>
+
                     {/* Author */}
-                    <label className="mb-2 font-medium">
-                        Author
+                    <div className="flex flex-col mb-4">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                            Author
+                        </label>
                         <input
                             type="text"
                             name="author"
                             value={bookData.author}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            placeholder="e.g. F. Scott Fitzgerald"
+                            className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-textPrimary placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                             required
                         />
-                    </label>
+                    </div>
+
                     {/* Genre */}
-                    <label className="mb-2 font-medium">
-                        Genre
+                    <div className="flex flex-col mb-4">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                            Genre
+                        </label>
                         <input
                             type="text"
                             name="genre"
                             value={bookData.genre}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            placeholder="e.g. Fiction, Classics"
+                            className="w-full px-4 py-2.5 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-textPrimary placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200"
                             required
                         />
-                    </label>
+                    </div>
+
                     {/* Description */}
-                    <label className="mb-2 font-medium">
-                        Description
+                    <div className="flex flex-col mb-6">
+                        <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                            Why do you recommend it?
+                        </label>
                         <textarea
                             name="description"
                             value={bookData.description}
                             onChange={handleInputChange}
-                            className="w-full p-2 border border-border rounded-md focus:outline-none focus:ring focus:ring-accent bg-background"
+                            placeholder="Share your thoughts about this masterpiece..."
+                            rows="4"
+                            className="w-full px-4 py-3 bg-zinc-950 border border-zinc-800 rounded-xl text-sm text-textPrimary placeholder:text-zinc-600 focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 resize-none"
                             required
                         />
-                    </label>
+                    </div>
 
-                    <div className="flex gap-2 mt-4">
-                        <button
-                            type="submit"
-                            className={`flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600`}>
-                            {existingBook ? "Save Changes" : "Save Book"}
-                        </button>
+                    <div className="flex gap-3">
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="flex-1 p-2 bg-primary text-textPrimary rounded-md hover:bg-blue-600">
+                            className="flex-1 py-2.5 rounded-full bg-zinc-800 hover:bg-zinc-750 active:scale-[0.98] text-zinc-300 hover:text-textPrimary font-semibold text-sm transition-all duration-150">
                             Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="flex-1 py-2.5 rounded-full bg-primary hover:bg-amber-700 active:scale-[0.98] text-white font-semibold text-sm shadow-md shadow-primary/10 transition-all duration-150">
+                            {existingBook ? "Save Changes" : "Submit"}
                         </button>
                     </div>
                 </form>

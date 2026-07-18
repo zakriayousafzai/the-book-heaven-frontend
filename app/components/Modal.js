@@ -1,15 +1,11 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { motion } from "framer-motion";
 
 /**
  * Modal Component
  * A reusable modal dialog component with backdrop and focus management
- *
- * @param {Object} props
- * @param {boolean} props.isOpen - Controls modal visibility
- * @param {Function} props.onClose - Handler for closing the modal
- * @param {React.ReactNode} props.children - Modal content
  */
 const Modal = ({ isOpen, onClose, children }) => {
     // Handle escape key press to close modal
@@ -31,27 +27,33 @@ const Modal = ({ isOpen, onClose, children }) => {
             document.body.style.overflow = "unset";
         };
     }, [isOpen, onClose]);
+
     if (!isOpen) return null;
 
     return (
         <div
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
             role="dialog"
             aria-modal="true"
             aria-labelledby="modal-title">
-            {/* Backdrop with blur effect */}
-            <div
-                className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+            {/* Backdrop with fade-in and premium blur */}
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="fixed inset-0 bg-black/70 backdrop-blur-md"
                 onClick={onClose}
                 aria-hidden="true"
             />
 
-            {/* Modal content */}
-            <div
-                className="relative z-50 bg-surface rounded-lg shadow-xl max-w-[90vw] sm:max-w-[50vw] max-h-[90vh] overflow-y-auto"
+            {/* Modal content with springy slide up & scale */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 16 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ type: "spring", stiffness: 350, damping: 26 }}
+                className="relative z-50 bg-zinc-900 border border-zinc-800 shadow-2xl rounded-2xl max-w-lg w-full max-h-[85vh] overflow-y-auto"
                 role="document">
                 {children}
-            </div>
+            </motion.div>
         </div>
     );
 };

@@ -34,41 +34,47 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     };
 
     return (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex items-center justify-center gap-2 mt-12 w-full py-4">
             <button
                 onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 rounded-md text-sm font-medium bg-surface border border-border text-textPrimary
-                           hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
-                Previous
+                className="px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider bg-zinc-900/60 border border-zinc-800/80 text-zinc-300
+                           hover:bg-zinc-850 hover:text-textPrimary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300 transition-all duration-155 active:scale-[0.97]"
+                aria-label="Previous page">
+                Prev
             </button>
 
-            {getPageNumbers().map((page, index) =>
-                page === "..." ? (
-                    <span
-                        key={`ellipsis-${index}`}
-                        className="px-2 py-1.5 text-textSecondary text-sm">
-                        ...
-                    </span>
-                ) : (
-                    <button
-                        key={page}
-                        onClick={() => onPageChange(page)}
-                        className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                            currentPage === page
-                                ? "bg-primary text-white"
-                                : "bg-surface border border-border text-textPrimary hover:bg-secondary"
-                        }`}>
-                        {page}
-                    </button>
-                )
-            )}
+            <div className="flex items-center gap-1">
+                {getPageNumbers().map((page, index) =>
+                    page === "..." ? (
+                        <span
+                            key={`ellipsis-${index}`}
+                            className="px-3 py-2 text-zinc-500 font-mono text-xs select-none">
+                            &bull;&bull;&bull;
+                        </span>
+                    ) : (
+                        <button
+                            key={page}
+                            onClick={() => onPageChange(page)}
+                            className={`w-9 h-9 rounded-full text-xs font-mono transition-all duration-155 flex items-center justify-center active:scale-[0.95] ${
+                                currentPage === page
+                                    ? "bg-primary text-white border border-primary/20 shadow-md shadow-primary/10"
+                                    : "bg-zinc-900/40 border border-zinc-800/60 text-zinc-400 hover:bg-zinc-800/60 hover:text-textPrimary"
+                            }`}
+                            aria-label={`Go to page ${page}`}
+                            aria-current={currentPage === page ? "page" : undefined}>
+                            {page}
+                        </button>
+                    )
+                )}
+            </div>
 
             <button
                 onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 rounded-md text-sm font-medium bg-surface border border-border text-textPrimary
-                           hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                className="px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider bg-zinc-900/60 border border-zinc-800/80 text-zinc-300
+                           hover:bg-zinc-850 hover:text-textPrimary disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-zinc-900/60 disabled:hover:text-zinc-300 transition-all duration-155 active:scale-[0.97]"
+                aria-label="Next page">
                 Next
             </button>
         </div>

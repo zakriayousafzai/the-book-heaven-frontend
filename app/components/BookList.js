@@ -27,48 +27,60 @@ const BookList = () => {
     );
 
     return (
-        <div className="flex flex-col p-5 items-center">
-            <span className="md:w-[60vw] lg:w-[50vw] w-[80vw]">
-                <h1 className="text-4xl text-center m-5">
-                    Discover Your Next Great Read at The Book Heaven!
+        <div className="flex flex-col items-center w-full px-4 py-8 md:py-16">
+            {/* Hero Section */}
+            <div className="text-center max-w-2xl mb-12 md:mb-20">
+                <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-textPrimary leading-[1.1] mb-6">
+                    Discover Your Next Great Read
                 </h1>
+                
+                <p className="text-sm sm:text-base text-textSecondary max-w-md mx-auto leading-relaxed mb-8">
+                    A curated sanctuary for readers. Share your recommendations and explore handpicked books from the community.
+                </p>
 
-                {!isAuthenticated && (
-                    <div className="mb-4 text-center text-sm">
-                        <p className="text-textSecondary">
-                            Please login to recommend a book.
-                        </p>
-                        <p className="text-textSecondary">
-                            If you don&apos;t have an account, please register.
+                {isAuthenticated ? (
+                    <BookForm />
+                ) : (
+                    <div className="inline-flex flex-col items-center gap-1.5 px-6 py-4 bg-zinc-900/40 border border-zinc-800/60 rounded-2xl backdrop-blur-sm">
+                        <p className="text-xs sm:text-sm text-textSecondary">
+                            Please login to recommend a book to the heaven.
                         </p>
                     </div>
                 )}
-            </span>
+            </div>
 
-            {isAuthenticated && <BookForm />}
-
-            <h1 className="text-xl text-textSecondary mt-10 mb-3">
-                List of Recommended Books
-            </h1>
-
-            {loading ? (
-                <div className="mt-10" aria-live="polite" role="status">
-                    <BookLoading size="md" />
+            {/* Catalog Section */}
+            <div className="w-full flex flex-col mt-4">
+                <div className="flex items-center justify-between border-b border-border/60 pb-4 mb-8">
+                    <h2 className="text-lg md:text-xl font-semibold tracking-tight text-textPrimary">
+                        Community Library
+                    </h2>
+                    <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
+                        {booksData ? `${booksData.length} active` : ""}
+                    </span>
                 </div>
-            ) : booksData && booksData.length > 0 ? (
-                <>
-                    <BookGrid bookData={booksData} />
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                </>
-            ) : (
-                <p className="text-textSecondary mt-10">
-                    No books yet. Be the first to recommend one!
-                </p>
-            )}
+
+                {loading ? (
+                    <div className="flex justify-center items-center py-20" aria-live="polite" role="status">
+                        <BookLoading size="lg" />
+                    </div>
+                ) : booksData && booksData.length > 0 ? (
+                    <div className="w-full flex flex-col items-center">
+                        <BookGrid bookData={booksData} />
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                    </div>
+                ) : (
+                    <div className="text-center py-20 bg-zinc-900/20 rounded-2xl border border-dashed border-zinc-800">
+                        <p className="text-textSecondary text-sm">
+                            No books yet. Be the first to recommend one!
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

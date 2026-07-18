@@ -137,27 +137,27 @@ const SearchBar = () => {
     };
 
     return (
-        <div className=" flex items-center justify-center relative">
+        <div className="flex items-center justify-center relative w-full">
             {/* Search container */}
             <div
                 ref={searchRef}
-                className="relative flex flex-col items-center gap-1">
+                className="relative flex flex-col items-center w-full">
                 {/* Search input container */}
-                <div className="relative flex items-center w-52 sm:w-96">
+                <div className="relative flex items-center w-full">
                     {/* Search icon */}
-                    <MagnifyingGlassIcon className="absolute left-3 h-5 w-5 text-textSecondary" />
+                    <MagnifyingGlassIcon className="absolute left-3.5 h-4 w-4 text-zinc-400 pointer-events-none" />
 
                     {/* Search input */}
                     <input
                         ref={inputRef}
-                        className="bg-surface text-textPrimary border-[1px] border-black h-10 rounded-md 
-                     pl-10 pr-10 opacity-80 w-full focus:outline-none focus:ring-2 
-                     focus:ring-accent focus:border-transparent"
+                        className="bg-zinc-900/60 backdrop-blur border border-zinc-800/80 text-textPrimary text-xs sm:text-sm h-9 sm:h-10 rounded-full 
+                                 pl-10 pr-10 w-full placeholder:text-zinc-500 focus:outline-none focus:ring-4 
+                                 focus:ring-primary/20 focus:border-primary focus:bg-zinc-900/90 transition-all duration-200"
                         type="text"
                         value={inputValue}
                         onChange={handleChange}
                         onKeyDown={handleKeyDown}
-                        placeholder="Search by Title, Author or Genre"
+                        placeholder="Search books, authors, genres..."
                         aria-label="Search books"
                         aria-controls="search-results"
                         aria-activedescendant={
@@ -171,9 +171,9 @@ const SearchBar = () => {
                     {inputValue && (
                         <button
                             onClick={handleClear}
-                            className="absolute right-3 text-textSecondary hover:text-textPrimary"
+                            className="absolute right-3.5 text-zinc-400 hover:text-textPrimary transition-colors"
                             aria-label="Clear search">
-                            <XMarkIcon className="h-5 w-5" />
+                            <XMarkIcon className="h-4 w-4" />
                         </button>
                     )}
                 </div>
@@ -183,43 +183,41 @@ const SearchBar = () => {
                     <div
                         id="search-results"
                         role="listbox"
-                        className="absolute top-full mt-1 w-52 sm:w-96 bg-background border-[1px] 
-                     border-border rounded-md shadow-lg z-10 max-h-[60vh] overflow-y-auto">
+                        className="absolute top-full mt-2 w-full bg-zinc-900/95 backdrop-blur-xl border 
+                                 border-zinc-800 shadow-2xl rounded-xl z-50 max-h-[60vh] overflow-y-auto py-1.5 divide-y divide-zinc-800/40">
                         {isSearching ? (
-                            <div className="p-3 text-textSecondary text-center">
-                                Searching...
+                            <div className="p-4 text-zinc-400 text-xs sm:text-sm text-center animate-pulse">
+                                Searching library...
                             </div>
                         ) : matchingBooks.length > 0 ? (
                             matchingBooks.map((book, index) => (
                                 <Link
                                     key={book._id}
                                     href={`/bookDetailsPage/${book._id}`}
-                                    onClick={() => setIsOpen(false)}>
+                                    onClick={() => setIsOpen(false)}
+                                    className="block">
                                     <div
                                         role="option"
                                         id={`result-${index}`}
                                         aria-selected={selectedIndex === index}
-                                        className={`flex items-center gap-3 p-2 hover:bg-secondary cursor-pointer
-                              ${selectedIndex === index ? "bg-secondary" : "bg-surface"}`}>
-                                        <div className="flex flex-col">
-                                            <span className="text-textPrimary font-medium">
-                                                {book.title}
-                                            </span>
-                                            <span className="text-textSecondary text-sm">
-                                                {book.genre}
-                                            </span>
-                                            <span className="text-textSecondary text-sm">
-                                                {book.author}
-                                            </span>
+                                        className={`flex flex-col gap-0.5 p-3.5 cursor-pointer transition-all duration-150
+                                                  ${selectedIndex === index ? "bg-zinc-800 text-textPrimary" : "bg-transparent text-textSecondary hover:bg-zinc-800/50 hover:text-textPrimary"}`}>
+                                        <span className="text-textPrimary font-semibold text-xs sm:text-sm">
+                                            {book.title}
+                                        </span>
+                                        <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-400">
+                                            <span className="font-medium text-primary">{book.author}</span>
+                                            <span>&middot;</span>
+                                            <span className="italic">{book.genre}</span>
                                         </div>
                                     </div>
                                 </Link>
                             ))
                         ) : (
-                            <div className="p-3 text-textSecondary text-center">
+                            <div className="p-4 text-zinc-400 text-xs sm:text-sm text-center">
                                 {inputValue.length >= SEARCH_CONFIG.MIN_LENGTH
-                                    ? "No results found"
-                                    : `Type at least ${SEARCH_CONFIG.MIN_LENGTH} characters to search`}
+                                    ? "No matches found in heaven"
+                                    : `Type at least ${SEARCH_CONFIG.MIN_LENGTH} characters`}
                             </div>
                         )}
                     </div>

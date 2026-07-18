@@ -2,6 +2,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
+import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 /**
  * ErrorBoundary Component
@@ -49,23 +50,33 @@ class ErrorBoundary extends React.Component {
         if (this.state.hasError) {
             return (
                 <div
-                    className="min-h-screen flex items-center justify-center bg-background"
+                    className="min-h-screen flex items-center justify-center bg-background px-4 py-12"
                     role="alert">
-                    <div className="bg-surface p-8 rounded-lg shadow-lg max-w-md w-full mx-4">
-                        <h2 className="text-2xl font-bold text-textPrimary mb-4">
+                    <div className="bg-zinc-900 border border-zinc-800 p-8 sm:p-10 rounded-2xl shadow-2xl max-w-md w-full text-center flex flex-col items-center">
+                        {/* Elegant Error Icon */}
+                        <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 mb-5">
+                            <ExclamationTriangleIcon className="w-6 h-6" />
+                        </div>
+
+                        <h2 className="text-xl font-bold text-textPrimary tracking-tight mb-2">
                             Something went wrong
                         </h2>
-                        <p className="text-textSecondary mb-6">
-                            {this.state.error?.message ||
-                                "An unexpected error occurred"}
+                        
+                        <p className="text-xs text-zinc-500 font-mono uppercase tracking-widest mb-4">
+                            System Error
                         </p>
+
+                        <div className="w-full text-left bg-zinc-950 border border-zinc-800/80 p-4 rounded-xl text-xs text-textSecondary font-mono leading-relaxed mb-6 max-h-[120px] overflow-y-auto break-all">
+                            {this.state.error?.message || "An unexpected error occurred"}
+                        </div>
+
                         <button
                             onClick={() => {
                                 // Reset error state and refresh the page
                                 this.setState({ hasError: false, error: null });
                                 window.location.reload();
                             }}
-                            className="bg-primary text-white px-4 py-2 rounded hover:bg-opacity-90 transition-colors"
+                            className="w-full py-2.5 rounded-full bg-primary hover:bg-amber-700 active:scale-[0.98] text-white font-semibold text-sm transition-all"
                             aria-label="Retry loading the application">
                             Try again
                         </button>

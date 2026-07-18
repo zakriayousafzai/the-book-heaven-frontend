@@ -6,26 +6,29 @@ const dashboard = async () => {
     const username = user.username;
 
     return (
-        <div
-            className="container mx-auto px-4 py-8"
-            role="main"
-            aria-label={`${username}'s public profile`}>
+        <main className="w-full py-8 md:py-16">
             <div
-            className="bg-surface rounded-lg border border-border p-6 mb-6"
-            role="region"
-            aria-label="User profile information">
-            <div className="flex justify-between gap-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-text-primary">
-                        {username}
-                    </h1>
+                className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10"
+                role="main"
+                aria-label={`${username}'s public profile`}>
+                
+                {/* Profile Header */}
+                <div className="border-b border-border/80 pb-6 flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-textPrimary tracking-tight">
+                            {username}
+                        </h1>
+                        <p className="text-xs text-textSecondary mt-1 uppercase tracking-widest font-mono">
+                            Member Dashboard Drawer
+                        </p>
+                    </div>
+                </div>
+
+                <div className="space-y-10">
+                    <FetchData userName={username} />
                 </div>
             </div>
-        </div>
-
-            <FetchData userName={username} />
-
-        </div>
+        </main>
     );
 };
 

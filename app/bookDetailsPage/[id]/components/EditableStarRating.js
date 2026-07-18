@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { StarIcon as SolidStar } from "@heroicons/react/24/solid";
+import { StarIcon as OutlineStar } from "@heroicons/react/24/outline";
 
 /**
  * EditableStarRating Component
- * Interactive star rating component with hover effects
+ * Interactive star rating component with hover effects using consistent Heroicons
  *
  * @param {Object} props
  * @param {number} props.rating - Current rating value (1-5)
@@ -27,7 +29,7 @@ const EditableStarRating = ({ rating, onRatingChange, id }) => {
 
     return (
         <div
-            className="flex text-2xl cursor-pointer"
+            className="flex items-center gap-1.5 cursor-pointer"
             role="radiogroup"
             aria-label="Rating selector"
             id={id}>
@@ -36,25 +38,22 @@ const EditableStarRating = ({ rating, onRatingChange, id }) => {
                 const isFilled = starNumber <= (hoverRating || rating);
 
                 return (
-                    <span
+                    <button
                         key={index}
+                        type="button"
                         role="radio"
                         aria-checked={starNumber === rating}
                         aria-label={`${starNumber} star${starNumber === 1 ? "" : "s"}`}
-                        tabIndex={0}
                         onMouseEnter={() => handleMouseEnter(starNumber)}
                         onMouseLeave={handleMouseLeave}
                         onClick={() => handleClick(starNumber)}
-                        onKeyPress={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                                handleClick(starNumber);
-                            }
-                        }}
-                        className={`transition-colors duration-200 ${
-                            isFilled ? "text-accent" : "text-gray-300"
-                        } focus:outline-none focus:ring-2 focus:ring-accent rounded`}>
-                        ★
-                    </span>
+                        className="transition-all duration-150 transform hover:scale-115 focus:outline-none focus:ring-4 focus:ring-primary/20 rounded-md p-0.5">
+                        {isFilled ? (
+                            <SolidStar className="w-6 h-6 fill-amber-500" />
+                        ) : (
+                            <OutlineStar className="w-6 h-6 text-zinc-600" />
+                        )}
+                    </button>
                 );
             })}
         </div>
