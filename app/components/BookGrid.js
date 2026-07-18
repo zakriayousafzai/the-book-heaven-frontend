@@ -25,6 +25,7 @@ const BookGrid = ({ bookData }) => {
                         artwork={book.title}
                         title={book.title}
                         genre={book.genre}
+                        status={book.status}
                     />
                 ))}
             </div>

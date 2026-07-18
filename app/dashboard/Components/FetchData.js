@@ -27,11 +27,13 @@ const FetchData = ({userName}) => {
                 },
             );
             console.log(response.data);
-            setRecommendedBooks(response.data.recommendedBooks);
-            setFavoriteBooks(response.data.favoriteBooks);
+            setRecommendedBooks(response.data.recommendedBooks || []);
+            setFavoriteBooks(response.data.favoriteBooks || []);
 
         } catch (err) {
             console.error("Error fetching recommended books:", err);
+            setRecommendedBooks([]);
+            setFavoriteBooks([]);
         } finally {
             setLoading(false);
         }

@@ -24,6 +24,41 @@ const ReviewSection = ({ params }) => {
 
     const [rating, setRating] = useState(1);
     const [comment, setComment] = useState("");
+    const [bookStatus, setBookStatus] = useState(null);
+
+    useEffect(() => {
+        if (!id) return;
+
+        const storeBook = booksData?.find((b) => b._id === id);
+        if (storeBook) {
+            setBookStatus(storeBook.status || "allowed");
+            return;
+        }
+
+        const fetchBookStatus = async () => {
+            try {
+                const token = await getToken();
+                const response = await axios.get(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/books/${id}`,
+                    token
+                        ? {
+                              headers: {
+                                  Authorization: `Bearer ${token}`,
+                              },
+                          }
+                        : undefined,
+                );
+                setBookStatus(response.data?.status || null);
+            } catch (err) {
+                console.error("Error fetching book status:", err);
+                setBookStatus(null);
+            }
+        };
+
+        fetchBookStatus();
+    }, [id, booksData, getToken]);
+
+    const isApproved = bookStatus === "allowed";
 
     const fetchReviews = useCallback(
         async (page = 1) => {
@@ -132,7 +167,16 @@ const ReviewSection = ({ params }) => {
                 </div>
             )}
 
-            {!isAuthenticated && (
+            {!isApproved && bookStatus !== null && (
+                <div className="mb-4">
+                    <p className="text-textSecondary">
+                        This book is awaiting approval. Reviews can be added once
+                        it is approved.
+                    </p>
+                </div>
+            )}
+
+            {isApproved && !isAuthenticated && (
                 <div className="mb-4">
                     <p className="text-textSecondary">
                         Please log in to leave a review.
@@ -140,7 +184,7 @@ const ReviewSection = ({ params }) => {
                 </div>
             )}
 
-            {isAuthenticated && (
+            {isApproved && isAuthenticated && (
                 <form
                     onSubmit={handleReviewSubmit}
                     className="flex flex-col gap-4 border border-border p-3 rounded-md bg-surface"

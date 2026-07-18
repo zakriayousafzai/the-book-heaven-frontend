@@ -8,7 +8,7 @@ import { useBooksStore } from "@/app/store/useBooksStore";
 import Modal from "./Modal";
 
 const BookForm = ({
-    setLoading,
+    setLoading = () => {},
     isOpen: externalIsOpen,
     onClose,
     existingBook = null,

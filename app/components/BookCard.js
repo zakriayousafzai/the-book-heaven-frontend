@@ -2,10 +2,20 @@ import React from "react";
 import Link from "next/link";
 
 // BookCard component displays individual book information with a vintage book cover aesthetic
-const BookCard = ({ id, title, genre }) => {
+const BookCard = ({ id, title, genre, status }) => {
     return (
         <Link href={`/bookDetailsPage/${id}`}>
             <div className="h-auto relative transform transition-transform duration-300 hover:scale-105 hover:rotate-1 m-4">
+                {status && status !== "allowed" && (
+                    <span
+                        className={`absolute -top-2 left-1/2 -translate-x-1/2 z-20 px-2 py-0.5 rounded-full text-[10px] font-semibold capitalize ${
+                            status === "pending"
+                                ? "bg-yellow-500 text-black"
+                                : "bg-red-500 text-white"
+                        }`}>
+                        {status === "pending" ? "Pending approval" : status}
+                    </span>
+                )}
                 {/* Main Book Cover Container */}
                 <div
                     className="flex flex-col items-center p-4 rounded-md h-full w-full

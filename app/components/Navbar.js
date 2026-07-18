@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import SearchBar from "./SearchBar";
-import { Show, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { Show, SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 
 const Navbar = () => {
+    const { user } = useUser();
+    const isAdmin = user?.publicMetadata?.role === "admin";
+
     return (
         <div className="flex flex-col w-full bg-background border-b border-border">
             <div className="flex justify-between items-center h-[10vh] bg-background text-textPrimary p-3">
@@ -36,6 +41,7 @@ const Navbar = () => {
                 <div className="flex gap-5">
                     <Show when="signed-in">
                         <Link href={`/dashboard`}>Dashboard</Link>
+                        {isAdmin && <Link href={`/admin`}>Admin</Link>}
                         <UserButton />
                     </Show>
 

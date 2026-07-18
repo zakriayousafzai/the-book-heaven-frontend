@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import { useBooksStore } from "@/app/store/useBooksStore";
 import BookGrid from "./BookGrid";
 import BookForm from "./BookForm";
@@ -18,18 +18,10 @@ const BookList = () => {
         totalPages,
         fetchBooks,
     } = useBooksStore();
-    const [initialLoading, setInitialLoading] = useState(true);
-
-    useEffect(() => {
-        if (booksData && booksData.length > 0) {
-            setInitialLoading(false);
-        }
-    }, [booksData]);
 
     const handlePageChange = useCallback(
         (page) => {
-            setInitialLoading(true);
-            fetchBooks({ page }).then(() => setInitialLoading(false));
+            fetchBooks({ page });
         },
         [fetchBooks],
     );
@@ -53,13 +45,17 @@ const BookList = () => {
                 )}
             </span>
 
-            {isAuthenticated && <BookForm setLoading={setInitialLoading} />}
+            {isAuthenticated && <BookForm />}
 
             <h1 className="text-xl text-textSecondary mt-10 mb-3">
                 List of Recommended Books
             </h1>
 
-            {!initialLoading ? (
+            {loading ? (
+                <div className="mt-10" aria-live="polite" role="status">
+                    <BookLoading size="md" />
+                </div>
+            ) : booksData && booksData.length > 0 ? (
                 <>
                     <BookGrid bookData={booksData} />
                     <Pagination
@@ -69,9 +65,9 @@ const BookList = () => {
                     />
                 </>
             ) : (
-                <div className="mt-10" aria-live="polite" role="status">
-                    <BookLoading size="md" />
-                </div>
+                <p className="text-textSecondary mt-10">
+                    No books yet. Be the first to recommend one!
+                </p>
             )}
         </div>
     );
