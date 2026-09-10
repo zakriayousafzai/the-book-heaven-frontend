@@ -166,7 +166,7 @@ export const BookDetails = ({ params }) => {
         <div className="w-full flex flex-col md:flex-row gap-8 md:gap-12 text-on-surface">
             {/* Left Column: Physical Mock Cover Container */}
             <div className="w-full md:w-72 flex shrink-0 justify-center md:justify-start">
-                <div className="bg-surface-container-lowest rounded-2xl border border-outline-variant/70 shadow-[0_8px_24px_-6px_rgba(27,28,26,0.08)] w-full max-w-[280px]">
+                <div className="rounded-2xl border border-outline-variant/70 shadow-[0_8px_24px_-6px_rgba(27,28,26,0.08)] w-full max-w-[280px]">
                     <div className={`relative aspect-[3/4.4] w-full rounded-[4px] border ${palette.border} bg-gradient-to-br ${palette.from} ${palette.to} shadow-md p-6 overflow-hidden flex flex-col justify-between`}>
                         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'6\' height=\'6\' viewBox=\'0 0 6 6\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'%3E%3Cpath d=\'M5 0h1L0 6V5zM6 5v1H5z\'/%3E%3C/g%3E%3C/svg%3E')] pointer-events-none" />
                         <div className="absolute left-0 top-0 w-3.5 h-full bg-gradient-to-r from-black/40 via-black/15 to-transparent rounded-l-[4px]" />
