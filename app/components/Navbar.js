@@ -19,7 +19,7 @@ const Navbar = () => {
                             href="/"
                             className="flex items-center gap-2.5 group">
                             <div className="w-9 h-9 rounded-lg bg-surface-container flex items-center justify-center border border-outline-variant/50 group-hover:border-primary/40 group-hover:bg-primary-fixed/30 transition-all">
-                                <BookOpenIcon className="w-5 h-5 text-primary group-hover:scale-105 transition-transform" />
+                                <BookOpenIcon className="w-5 h-5 text-primary" />
                             </div>
                             <span className="font-serif text-base sm:text-lg font-bold tracking-tight text-secondary group-hover:text-primary transition-colors hidden sm:inline">
                                 The Book Heaven
@@ -35,14 +35,14 @@ const Navbar = () => {
                     {/* Navigation Actions */}
                     <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
                         <Show when="signed-in">
-                            <Link 
-                                href="/dashboard" 
+                            <Link
+                                href="/dashboard"
                                 className="text-xs sm:text-sm font-medium text-secondary/80 hover:text-secondary transition-colors px-2 py-1 rounded-md hover:bg-surface-container">
                                 Dashboard
                             </Link>
                             {isAdmin && (
-                                <Link 
-                                    href="/admin" 
+                                <Link
+                                    href="/admin"
                                     className="text-xs sm:text-sm font-medium text-secondary/80 hover:text-secondary transition-colors px-2 py-1 rounded-md hover:bg-surface-container">
                                     Admin
                                 </Link>
