@@ -118,9 +118,6 @@ const ReviewCard = ({ review, setReviews }) => {
                             <span className="flex items-center">
                                 <StarRating rating={review.rating} />
                             </span>
-                            <span className="text-[11px] text-tertiary font-mono tracking-wider">
-                                &bull; Verified Reader
-                            </span>
                         </div>
                         <h4 className="font-serif text-sm sm:text-base font-bold text-secondary truncate">
                             {review.reviewerName}
