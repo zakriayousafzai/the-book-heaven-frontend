@@ -30,9 +30,9 @@ const BookList = () => {
     return (
         <div className="flex flex-col items-center w-full">
             {/* Full-Width Hero Section matching reference image */}
-            <section className="relative w-full flex items-center justify-center min-h-[540px] lg:min-h-[640px] xl:min-h-[700px] py-12 md:py-16 lg:py-20 overflow-hidden border-b border-outline-variant/40">
+            <section className="relative w-full flex items-center justify-center min-h-[440px] overflow-hidden border-b border-outline-variant/40">
                 {/* Left Bookshelf - Hugs far left edge from top to bottom */}
-                <div className="hidden lg:block absolute left-0 top-0 bottom-0 w-48 lg:w-56 xl:w-72 2xl:w-84 pointer-events-none select-none z-0">
+                <div className="hidden sm:block left-[-50px] absolute top-0 bottom-0 w-48 lg:w-56 xl:w-72 2xl:w-84 pointer-events-none select-none z-0">
                     <Image
                         src="/book_shelf_left.jpg"
                         alt="Left bookshelf"
@@ -44,13 +44,13 @@ const BookList = () => {
                 </div>
 
                 {/* Center Hero Content */}
-                <div className="relative z-10 max-w-2xl px-6 mx-auto text-center flex flex-col items-center">
+                <div className="relative z-10 md:max-w-2xl max-w-[27rem] px-6 mx-auto text-center flex flex-col items-center">
 
                     <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-secondary leading-[1.14] mb-6 max-w-xl">
                         Discover Your Next Great Read & Share with the World
                     </h1>
 
-                    <p className="text-base sm:text-lg text-on-surface-variant max-w-lg mx-auto leading-relaxed mb-8">
+                    <p className="text-sm md:text-lg text-on-surface-variant max-w-lg mx-auto leading-relaxed mb-8">
                         A scholarly yet accessible sanctuary for readers. Explore handpicked recommendations, share your favorite books, and keep abreast of community reviews.
                     </p>
 
@@ -66,7 +66,7 @@ const BookList = () => {
                 </div>
 
                 {/* Right Bookshelf - Hugs far right edge from top to bottom */}
-                <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-48 lg:w-56 xl:w-72 2xl:w-84 pointer-events-none select-none z-0">
+                <div className="hidden sm:block absolute right-[-50px] top-0 bottom-0 w-48 lg:w-56 xl:w-72 2xl:w-84 pointer-events-none select-none z-0">
                     <Image
                         src="/book_shelf_right.jpg"
                         alt="Right bookshelf"
