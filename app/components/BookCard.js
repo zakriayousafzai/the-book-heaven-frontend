@@ -27,7 +27,7 @@ const BookCard = ({ id, title, genre, status }) => {
             <motion.div
                 className="relative aspect-[3/4.4] w-full cursor-pointer group bg-surface-container-lowest rounded-xl border border-outline-variant/60 shadow-[0_4px_16px_-4px_rgba(27,28,26,0.06)] hover:border-primary/40 hover:shadow-[0_12px_28px_-6px_rgba(27,28,26,0.12)] transition-colors"
                 whileHover={{
-                    y: -6,
+                    y: -1,
                     scale: 1.015,
                 }}
                 transition={{ type: "spring", stiffness: 350, damping: 25 }}
