@@ -16,6 +16,26 @@ In short: **a community-run, moderated space for sharing and discovering great r
 2. **Signed-in members** recommend books, rate and review approved titles, save favorites, and manage their recommendations from a personal dashboard.
 3. **Admins** moderate submissions through a control panel — approving or denying books before they become visible to everyone.
 
+## Screenshots
+
+A quick tour of the app: browse the Community Library, search for a title, dig into a book's details and reviews, manage your reading list, and moderate submissions.
+
+![The Book Heaven home page with the Community Library](docs/screenshots/home.webp)
+
+<p align="center">
+  <img src="docs/screenshots/search.webp" alt="Live search results across the Community Library" width="49%" />
+  <img src="docs/screenshots/book-details.webp" alt="Book details page with description, favorite button, and reader reviews" width="49%" />
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/reviews.webp" alt="Reviews, star ratings, and the review form" width="49%" />
+  <img src="docs/screenshots/dashboard.webp" alt="Member dashboard with favorite and recommended books" width="49%" />
+</p>
+
+![Admin control panel with pending and approved books](docs/screenshots/admin.webp)
+
+*Screenshots show the app running with sample library content.*
+
 ## Frontend & Backend
 
 - A web app (frontend) built with Next.js
@@ -110,6 +130,7 @@ the-book-heaven/
 │   │   └── user/[username]/          # Public profile page
 │   │       ├── page.js
 │   │       └── Components/FetchData.js  # Recommended books (owner-aware)
+│   ├── docs/screenshots/             # Images used in this README
 │   ├── proxy.js                      # Clerk middleware matcher
 │   ├── next.config.mjs
 │   ├── tailwind.config.mjs           # Theme colors + BG gradients
